@@ -1,0 +1,46 @@
+.pb-0 {
+    padding-bottom: 0;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.fabLowerRight {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.listEndCenter {
+    right: 5%;
+    position: absolute;
+}
+
+.shoppingListItem {
+    background-color: white;
+    border-top: 1px solid lightgray;
+}
+.shoppingListItem:last-child {
+    border-bottom: 1px solid lightgray;
+}
+
+.revertMargin {
+    margin: 0 -16px;
+}
+
+.hideFirstOption select option:first-child {
+    display: none;
+}
+
+.mdc-theme--dark .shoppingListItem {
+    color: white;
+    background-color: #4e4e4e;
+}
+
+@media(min-width: 1024px) {
+    .fabLowerRight {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+}
