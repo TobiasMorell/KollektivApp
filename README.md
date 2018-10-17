@@ -1,8 +1,6 @@
-# preact material app
+# Osteklokkens indkøbsliste webapp
 
-Super performant `Material` app for preact world using [preact-material-components](https://github.com/prateekbh/preact-material-components)
-
-## CLI Commands
+## CLI Commands for building and dev
 
 ``` bash
 # install dependencies
@@ -18,4 +16,4 @@ npm run build
 npm run serve
 ```
 
-For detailed explanation on how things work, checkout the [CLI Readme](https://github.com/developit/preact-cli/blob/master/README.md).
+Includes .NET Core based server
