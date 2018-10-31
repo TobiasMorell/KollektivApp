@@ -117,6 +117,35 @@ namespace OsteklokkenServer
                 await res.SendStatus(HttpStatusCode.OK);
             });
             
+            server.Post("/api/resetpassword", async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+
+                string username = form["username"];
+                string registrant = form["registrant"];
+                string newPassword1 = form["password1"];
+                string newPassword2 = form["password2"];
+
+                if (newPassword1 != newPassword2)
+                {
+                    await res.SendString("The two passwords provided does not match. Please repeat the new password properly", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+                
+                var user = users.FindOne(u => u.Username == username && u.Name == registrant);
+                if (user != null)
+                {
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword1);
+                    users.Update(user);
+                    await res.SendString("Your passwords has been changed!");
+                }
+                else
+                {
+                    await res.SendString("Sorry, the username or registrant name (or the combination of the two) are invalid", status: HttpStatusCode.BadRequest);
+                }
+                
+            });
+            
             server.Get("/api/shopping", Auth, async (req, res) =>
             {
                 var items = shoppingItems.FindAll();
