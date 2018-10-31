@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
@@ -11,8 +13,6 @@ namespace OsteklokkenServer
 {
     class Program
     {
-        private static string SecretOsteKey = "$2b$10$4fgf1zKuwEjZrloHE49NyuXKNpZYtQ03d1ApmuwJ9/aP1r1XTwUwC";
-        
         static void Main(string[] args)
         {
             var server = new RedHttpServer(5000, "public");
@@ -34,11 +34,15 @@ namespace OsteklokkenServer
             server.Post("/api/login", async (req, res) =>
             {
                 var form = await req.GetFormDataAsync();
-                if (!User.IsValidForm(form, out var username, out var password))
+                
+                if (!User.IsValidForm(form))
                 {
                     await res.SendString("Username or password missing", status: HttpStatusCode.BadRequest);
                     return;
                 }
+                
+                string username = form["username"];
+                string password = form["password"];
                 
                 var user = users.FindOne(u => u.Username == username);
                 if (user == null)
@@ -47,7 +51,7 @@ namespace OsteklokkenServer
                     return;
                 }
                 
-                if(BCrypt.Net.BCrypt.Verify(password, user.Password))
+                if (BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
                     req.OpenSession(new OsteSession
                     {
@@ -63,25 +67,32 @@ namespace OsteklokkenServer
             
             server.Post("/api/logout", Auth, async (req, res) =>
             {
-                req.GetSession<OsteSession>()?.Close(req);
+                req.GetSession<OsteSession>().Close(req);
                 await res.SendStatus(HttpStatusCode.OK);
             });
             
             server.Post("/api/register", async (req, res) =>
             {
                 var form = await req.GetFormDataAsync();
-                if (!User.IsValidForm(form, out var username, out var password))
+
+                if (!User.IsValidForm(form))
                 {
-                    await res.SendString("Username of password missing", status: HttpStatusCode.BadRequest);
+                    await res.SendString("Username, password or registrant name is missing", status: HttpStatusCode.BadRequest);
                     return;
                 }
+                
+                string username = form["username"];
+                string password = form["password"];
+                string registrant = form["registrant"];
 
-                if (!form.ContainsKey("adminKey") || !BCrypt.Net.BCrypt.Verify(form["adminKey"][0], SecretOsteKey))
+                var allowedRegistrants = File.ReadAllLines("./AllowedUsers.txt");
+
+                if (!allowedRegistrants.Contains(registrant))
                 {
-                    await res.SendString("Invalid or missing admin key", status: HttpStatusCode.BadRequest);
+                    await res.SendString("Sorry, you are not allowed to register here. Talk to Tobias if this is wrong", status: HttpStatusCode.BadRequest);
                     return;
                 }
-
+                
                 var userWithSameUsername = users.FindOne(u => u.Username == username);
                 if (userWithSameUsername != null)
                 {
@@ -93,7 +104,8 @@ namespace OsteklokkenServer
                 {
                     Id = User.NewId(),
                     Username = username,
-                    Password = BCrypt.Net.BCrypt.HashPassword(password)
+                    Password = BCrypt.Net.BCrypt.HashPassword(password),
+                    Name = registrant
                 };
                 
                 users.Insert(user.Id, user);
@@ -101,6 +113,7 @@ namespace OsteklokkenServer
                 {
                     Username = username
                 });
+                
                 await res.SendStatus(HttpStatusCode.OK);
             });
             
