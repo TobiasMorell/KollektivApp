@@ -61,7 +61,7 @@ namespace OsteklokkenServer
                 }
             });
             
-            server.Post("/api/logout", async (req, res) =>
+            server.Post("/api/logout", Auth, async (req, res) =>
             {
                 req.GetSession<OsteSession>()?.Close(req);
                 await res.SendStatus(HttpStatusCode.OK);
