@@ -1,6 +1,9 @@
 import { h, Component } from 'preact';
 import List from 'preact-material-components/List';
 import style from './style.css';
+import Icon from 'preact-material-components/Icon';
+import 'preact-material-components/Icon/style.css';
+import Backend from '../../Backend';
 
 const checkboxIcons = {
 	checked: 'check_box',
@@ -11,14 +14,14 @@ const editHoldTime = 1500;
 export default class ShoppingListItem extends Component {
 	state = {
 		listItemIcon: 'fastfood',
-		listItemState: checkboxIcons.unchecked,
 		editTimer: null
 	};
 
-	toggleListItemTick = () => {
-		this.setState({
-			listItemState: this.state.listItemState === checkboxIcons.checked ?
-				checkboxIcons.unchecked : checkboxIcons.checked
+	toggleListItemTick = (e) => {
+		let active = !this.state.item.Active;
+		Backend.setShoppingItemState(this.state.item, active).then(i => {
+			this.state.item.Active = active;
+			this.setState({ item: this.state.item });
 		});
 	};
 
@@ -39,20 +42,37 @@ export default class ShoppingListItem extends Component {
 			this.toggleListItemTick();
 		}
 	};
-	openEdit = () => {
-		this.onEditItem(this.state.item, this.state.category, this);
+	openEdit = (e) => {
+		e.stopPropagation();
+		this.onEditItem(this.state.item);
 	};
 
-	render({ item, onEditItem, category }) {
+	removeFromList = (e) => {
+		e.stopPropagation();
+		Backend.deleteShoppingItem(this.state.item).then(() => {
+			this.onDelete(this.state.item);
+		}).catch(e => {
+			//App.Snackbar.MDComponent.show({message: e});
+		});
+	};
+
+	render({ item, onEditItem, category, onDelete }) {
+		let checkBoxIcon = checkboxIcons.unchecked;
 		this.onEditItem = onEditItem;
+		this.onDelete = onDelete;
 		this.state.item = item;
 		this.state.category = category;
+		if (item.Active)
+			checkBoxIcon = checkboxIcons.checked;
+
 		return (
-			<List.Item class={style.shoppingListItem} ontouchstart={this.startEditTimer} ondragstart={this.abortEditTimer} ontouchend={this.abortEditTimer}>
+			<List.Item class={style.shoppingListItem} onClick={this.toggleListItemTick} ontouchstart={this.startEditTimer} ondragstart={this.abortEditTimer} ontouchend={this.abortEditTimer}>
 				<List.ItemGraphic>{this.state.listItemIcon}</List.ItemGraphic>
-				<span>{this.state.item}</span>
+				<span>{this.state.item.Name}</span>
 				<span class={style.listEndCenter}>
-					<i class="material-icons">{this.state.listItemState}</i>
+					<Icon class={style.checkbox}>{checkBoxIcon}</Icon>
+					<Icon className={[style.onlyDesktop, style.primaryOnHover].join(' ')} onClick={this.openEdit}>edit</Icon>
+					<Icon className={style.primaryOnHover} onClick={this.removeFromList} >delete_forever</Icon>
 				</span>
 			</List.Item>
 		);

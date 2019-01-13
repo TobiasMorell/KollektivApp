@@ -5,11 +5,8 @@ import Drawer from 'preact-material-components/Drawer';
 import List from 'preact-material-components/List';
 import Dialog from 'preact-material-components/Dialog';
 import Switch from 'preact-material-components/Switch';
-import 'preact-material-components/Switch/style.css';
-import 'preact-material-components/Dialog/style.css';
-import 'preact-material-components/Drawer/style.css';
-import 'preact-material-components/List/style.css';
-import 'preact-material-components/Toolbar/style.css';
+
+import 'preact-material-components/style.css';
 import style from './style.css';
 
 export default class Header extends Component {
@@ -26,8 +23,11 @@ export default class Header extends Component {
 
 	drawerRef = drawer => (this.drawer = drawer);
 	dialogRef = dialog => (this.dialog = dialog);
+	currentTab = '';
 
 	linkTo = path => () => {
+		this.currentTab = path.replace('/', '');
+
 		route(path);
 		this.closeDrawer();
 	};
@@ -53,43 +53,40 @@ export default class Header extends Component {
 		);
 	};
 
+	DrawerItem = ({ onSelected, icon, text, selected } ) => (
+		<Drawer.DrawerItem onClick={onSelected} selected={selected} class={selected ? style['black-text'] : ''}>
+			<List.ItemGraphic>{icon}</List.ItemGraphic>
+			{text}
+		</Drawer.DrawerItem>);
+
+
+	OsteDrawer = ({ }) => (
+		<Drawer modal ref={this.drawerRef}>
+			<Drawer.DrawerContent>
+				<this.DrawerItem onSelected={this.goHome} icon="home" text={window.lang.news} selected={this.currentTab === ''} />
+				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text={window.lang.shoppingList} selected={this.currentTab === 'shopping'} />
+				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text={window.lang.cooking} selected={this.currentTab === 'cooking'} />
+				<this.DrawerItem onSelected={this.goToMyProfile} icon="account_circle" text={window.lang.profile} selected={this.currentTab === 'profile'} />
+			</Drawer.DrawerContent>
+		</Drawer>);
+
 	render() {
 		return (
 			<div>
-				<Toolbar className="toolbar">
+				<Toolbar className={style['black-text']}>
 					<Toolbar.Row>
 						<Toolbar.Section align-start>
 							<Toolbar.Icon menu onClick={this.openDrawer}>
 								menu
 							</Toolbar.Icon>
-							<img className={style.img} src="/assets/osteklokken-logo.png"/>
-							<Toolbar.Title/>
+							<Toolbar.Title>Osteklokken App</Toolbar.Title>
 						</Toolbar.Section>
 						<Toolbar.Section align-end shrink-to-fit onClick={this.openSettings}>
-							<Toolbar.Icon>settings</Toolbar.Icon>
+							<Toolbar.Icon class={style['black-text']}>settings</Toolbar.Icon>
 						</Toolbar.Section>
 					</Toolbar.Row>
 				</Toolbar>
-				<Drawer.TemporaryDrawer ref={this.drawerRef}>
-					<Drawer.DrawerContent>
-						<Drawer.DrawerItem onClick={this.goHome}>
-							<List.ItemGraphic>home</List.ItemGraphic>
-							{window.lang.news}
-						</Drawer.DrawerItem>
-						<Drawer.DrawerItem onClick={this.goToShopping}>
-							<List.ItemGraphic>shopping_cart</List.ItemGraphic>
-							{window.lang.shoppingList}
-						</Drawer.DrawerItem>
-						<Drawer.DrawerItem onClick={this.goToCooking}>
-							<List.ItemGraphic>fastfood</List.ItemGraphic>
-							{window.lang.cooking}
-						</Drawer.DrawerItem>
-						<Drawer.DrawerItem onClick={this.goToMyProfile}>
-							<List.ItemGraphic>account_circle</List.ItemGraphic>
-							{window.lang.profile}
-						</Drawer.DrawerItem>
-					</Drawer.DrawerContent>
-				</Drawer.TemporaryDrawer>
+				<this.OsteDrawer />
 				<Dialog ref={this.dialogRef}>
 					<Dialog.Header>{window.lang.settings}</Dialog.Header>
 					<Dialog.Body>

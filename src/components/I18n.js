@@ -5,11 +5,8 @@ let _lang;
  * @returns {Promise<*>} Invoced when the language has been loaded.
  */
 export async function getLang() {
-	if (_lang)
-		return _lang;
-
 	let browserLanguage = navigator.language.substring(0, 2).toLowerCase();
-	if(browserLanguage === 'dk')
+	if (browserLanguage === 'dk')
 		_lang = await fetch('./assets/LangDk.json').then(resp => resp.json());
 	else if (browserLanguage === 'es')
 		_lang = await fetch('./assets/LangEs.json').then(resp => resp.json());

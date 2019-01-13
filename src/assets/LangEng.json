@@ -8,6 +8,9 @@
 	"settings": "Settings",
 	"darkTheme": "Enable dark theme",
 	"ok": "OK",
+	"name": "Name",
+	"newPassword": "New Password",
+	"newPasswordDescription": "Update the password for your account",
 	"notFound": "Page not found.",
 	"notFoundDescription": "Looks like the page you are trying to access, doesn't exist.",
 	"login": "Login",
@@ -20,5 +23,8 @@
 	"wares": {
 		"potatoes": "Potatoes",
 		"carrots": "Carrots"
-	}
+	},
+	"reset": "Reset",
+	"register": "Register",
+	"registerDescription": "Register an account with us today! Experience true Cheese Clock"
 }

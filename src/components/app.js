@@ -11,8 +11,19 @@ import NotFound from '../routes/404';
 // import Home from 'async!../routes/home';
 // import Profile from 'async!../routes/profile';
 import { getLang } from './I18n';
+import Snackbar from 'preact-material-components/Snackbar';
+import 'preact-material-components/Snackbar/style.css';
 
 export default class App extends Component {
+	static Snackbar;
+
+	componentDidCatch(error, errorInfo) {
+		//This does not work yet, but will so soon (hopefully)
+		console.error(error, errorInfo);
+		App.Snackbar.MDComponent.show({
+			message: error
+		});
+	}
 
 	/** Gets fired when the route changes.
 	 *	@param {Object} event		"change" event from [preact-router](http://git.io/preact-router)
@@ -24,7 +35,11 @@ export default class App extends Component {
 
 	render() {
 		window.lang = {
-			homeTitle: 'Title',
+			accept: 'Accept',
+			addToShoppingList: 'Add to shopping list',
+			edit: 'Edit',
+			decline: 'Decline',
+			homeTitle: 'Welcome to Osteklokken\'s App',
 			news: 'News',
 			shoppingList: 'Shopping List',
 			cooking: 'Cooking',
@@ -33,6 +48,9 @@ export default class App extends Component {
 			settings: 'Settings',
 			darkTheme: 'Enable dark theme',
 			ok: 'OK',
+			name: 'Name',
+			newPassword: 'New Password',
+			newPasswordDescription: 'Update the password for your account',
 			notFound: 'Page not found.',
 			notFoundDescription: "Looks like the page you are trying to access, doesn't exist.",
 			login: 'Login',
@@ -46,11 +64,10 @@ export default class App extends Component {
 				potatoes: 'Potatoes',
 				carrots: 'Carrots'
 			},
-			addToShoppingList: 'Add item to shopping list',
-			accept: 'ACCEPT',
-			decline: 'DECLINE',
-			week: 'Week',
-			edit: 'Edit'
+			reset: 'Reset',
+			register: 'Register',
+			registerDescription: 'Register an account with us today! Experience true Cheese Clock',
+			week: 'Week'
 		};
 
 		return (
@@ -65,6 +82,7 @@ export default class App extends Component {
 					<Profile path="/profile/:user" />
 					<NotFound default />
 				</Router>
+				<Snackbar ref={bar => App.Snackbar = bar} />
 			</div>
 		);
 	}

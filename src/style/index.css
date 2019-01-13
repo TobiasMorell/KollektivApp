@@ -1,5 +1,9 @@
 :root {
-    --mdc-theme-primary: #ebc877;
+    --mdc-theme-primary: #ff9800 !important;
+}
+
+.mdc-list-item__graphic {
+    color: #333333 !important;
 }
 
 html, body {
@@ -59,7 +63,7 @@ html, body {
 
 .mdc-card {
     margin: 16px;
-    padding: 16px;
+    padding: 8px;
 }
 
 .mdc-card__media div {
@@ -78,6 +82,10 @@ html, body {
 
 .mdc-select {
     width: 95%;
+}
+
+.mdc-text-field--focused:not(.mdc-text-field--invalid) .mdc-floating-label {
+    color: var(--mdc-theme-primary) !important;
 }
 
 @media(min-width: 1024px) {

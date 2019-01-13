@@ -18,7 +18,8 @@ export default class Home extends Component {
 						</div>
 					</Card.Media>
 					<div class={style.cardBody}>
-						We could add recent information here.
+						I'm thrilled to welcome you to Osteklokken's new app. You can access the shopping list from the menu
+						on the left. In the same menu you may find information about who's cooking and what they're cooking.
 					</div>
 				</Card>
 			</div>

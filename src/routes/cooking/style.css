@@ -1,3 +1,15 @@
 .media {
     background-image: url("/assets/osteklokken-logo.png");
 }
+
+.actionIcon:hover {
+    color: var(--mdc-theme-primary);
+}
+
+.actionIcon.like {
+    color: lightgreen;
+}
+
+.actionIcon.dislike {
+    color: red;
+}

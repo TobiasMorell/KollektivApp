@@ -2,3 +2,7 @@
     max-height: 100%;
     height: 3rem;
 }
+
+.black-text {
+    color: #333333 !important;
+}

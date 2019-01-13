@@ -1,6 +1,17 @@
 .login-card {
-    max-width: 400px;
-    width: 100%;
+    max-width: 60%;
     margin: 1vh auto auto;
     padding: 10px;
+}
+
+.login-card form > div {
+    margin-top: 15px;
+}
+
+.wide-text-field {
+    display: block;
+}
+
+.login-btn {
+    float: right;
 }

@@ -15,7 +15,7 @@ namespace OsteklokkenServer
 
         public static string NewId()
         {
-            return new Guid().ToString("N");
+            return Guid.NewGuid().ToString("N");
         }
         
         public static bool IsValidForm(IFormCollection form)

@@ -6,7 +6,9 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using Red;
 using LiteDB;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Red.CookieSessions;
 
 namespace OsteklokkenServer
@@ -20,22 +22,19 @@ namespace OsteklokkenServer
             var users = db.GetCollection<User>("users");
             var shoppingItems = db.GetCollection<ShoppingItem>("shoppingItems");
             
-            server.Use(new CookieSessions(new CookieSessionSettings(TimeSpan.FromDays(14))
-            {
-                Secure = false
-            }));
-
+            server.Use(new CookieSessions(new CookieSessionSettings(TimeSpan.FromDays(14))));
+            
             async Task Auth(Request req, Response res)
             {
-                if (req.GetSession<OsteSession>() == null)
-                    await res.SendStatus(HttpStatusCode.Unauthorized);
+                //if (req.GetSession<OsteSession>() == null)
+                //    await res.SendStatus(HttpStatusCode.Unauthorized);
             }
             
             server.Post("/api/login", async (req, res) =>
             {
                 var form = await req.GetFormDataAsync();
                 
-                if (!User.IsValidForm(form))
+                if (!form.ContainsKey("username") || !form.ContainsKey("password"))
                 {
                     await res.SendString("Username or password missing", status: HttpStatusCode.BadRequest);
                     return;
@@ -55,7 +54,8 @@ namespace OsteklokkenServer
                 {
                     req.OpenSession(new OsteSession
                     {
-                        Username = user.Username
+                        Username = user.Username,
+                        Name = user.Name
                     });
                     await res.SendStatus(HttpStatusCode.OK);
                 }
@@ -73,7 +73,13 @@ namespace OsteklokkenServer
             
             server.Post("/api/register", async (req, res) =>
             {
+                Console.WriteLine("Registration request");
                 var form = await req.GetFormDataAsync();
+
+                foreach (var f in form)
+                {
+                    Console.WriteLine(f);
+                }
 
                 if (!User.IsValidForm(form))
                 {
@@ -92,7 +98,14 @@ namespace OsteklokkenServer
                     await res.SendString("Sorry, you are not allowed to register here. Talk to Tobias if this is wrong", status: HttpStatusCode.BadRequest);
                     return;
                 }
-                
+                else
+                {
+                    var newAllowedRegistrant = allowedRegistrants.Where(r => r != registrant);
+                    File.Delete("./AllowedUsers.txt");
+                    File.WriteAllLinesAsync("./AllowedUsers.txt", newAllowedRegistrant);
+                }
+
+                Console.WriteLine("Checking username");
                 var userWithSameUsername = users.FindOne(u => u.Username == username);
                 if (userWithSameUsername != null)
                 {
@@ -100,6 +113,7 @@ namespace OsteklokkenServer
                     return;
                 }
 
+                Console.WriteLine("Creating user");
                 var user = new User()
                 {
                     Id = User.NewId(),
@@ -107,13 +121,24 @@ namespace OsteklokkenServer
                     Password = BCrypt.Net.BCrypt.HashPassword(password),
                     Name = registrant
                 };
+
+                try
+                {
+                    users.Insert(user.Id, user);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
                 
-                users.Insert(user.Id, user);
                 req.OpenSession(new OsteSession
                 {
-                    Username = username
+                    Username = username,
+                    Name = registrant
                 });
-                
+
+                Console.WriteLine("OK");
                 await res.SendStatus(HttpStatusCode.OK);
             });
             
@@ -137,7 +162,7 @@ namespace OsteklokkenServer
                 {
                     user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword1);
                     users.Update(user);
-                    await res.SendString("Your passwords has been changed!");
+                    await res.SendString("Your password has been changed!");
                 }
                 else
                 {
@@ -150,6 +175,69 @@ namespace OsteklokkenServer
             {
                 var items = shoppingItems.FindAll();
                 await res.SendJson(items);
+            });
+            
+            server.Post("/api/shopping", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("name") || !form.ContainsKey("category"))
+                {
+                    await res.SendString("'name' or 'category' is missing.", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                var items = shoppingItems.Find(item => item.Name == form["name"]);
+                if (items.Any())
+                {
+                    await res.SendString("Duplicate item cannot be added", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                var i = new ShoppingItem()
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Name = form["name"],
+                    Category = form["category"],
+                    Active = true
+                };
+                shoppingItems.Insert(i);
+                await res.SendJson(i);
+            });
+            
+            server.Put("/api/shopping", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("name") || !form.ContainsKey("category") || !form.ContainsKey("id"))
+                {
+                    await res.SendString("'name', 'category' or 'id' is missing.", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                var items = shoppingItems.FindOne(i => i.Id == form["id"].ToString());
+                if (items == null)
+                {
+                    await res.SendString("Invalid item Id", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                items.Name = form["name"];
+                items.Category = form["category"];
+                items.Active = form.ContainsKey("active") ? form["active"] == "true" : items.Active;
+                shoppingItems.Update(items);
+                await res.SendJson(items);
+            });
+            
+            server.Delete("/api/shopping", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("id"))
+                {
+                    await res.SendString("'id' is missing", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                shoppingItems.Delete(form["id"].ToString());
+                await res.SendStatus(HttpStatusCode.OK);
             });
 
             server.Start();

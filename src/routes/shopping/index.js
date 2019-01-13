@@ -12,57 +12,69 @@ import ShoppingListItem from './ShoppingListItem';
 import Backend from '../../Backend';
 import Dialog from 'preact-material-components/Dialog';
 import 'preact-material-components/Dialog/style.css';
-import Select from 'preact-material-components/Select';
-import 'preact-material-components/Select/style.css';
+import AutoCompleter from '../../components/AutoCompleter';
+import linkState from 'linkstate';
+import App from '../../components/app';
+
+function uniqueFunc(v, i, self) {
+	return self.indexOf(v) === i;
+}
 
 export default class Shopping extends Component {
 	state = {
 		items: null,
-		chosenCategory: 'Household',
-		addNewItem: false
+		addNewItem: false,
+		newName: '',
+		itemNameId: 'item-name-field'
 	};
 	componentWillMount() {
 		Backend.getShoppingListItems().then(i => {
+			if (!i)
+				i = [];
 			this.setState({
 				items: i
 			});
+		}).catch(e => {
+			App.Snackbar.MDComponent.show('Could not get shopping list');
 		});
 	}
 
-	createListItems(category, wares) {
-		let wareList = [];
-
-		for (const ware of wares) {
-			wareList.push (
-				<ShoppingListItem item={ware} onEditItem={this.openEditMenu} category={category} />
-			);
-		}
-		return wareList;
-	}
-
-	openEditMenu = (name, category, target) => {
-		this.state.addNewItem = false;
+	openEditMenu = (ware) => {
+		this.setState({
+			addNewItem: false,
+			editWare: ware,
+			newName: ware.Name
+		});
+		this.autoCompleter.setRecommendation(ware.Category);
 		this.addItemDlg.MDComponent.show();
-		document.getElementById('new-item-name').value = name;
-		document.getElementById('food-category-select').firstChild.value = category;
-		this.target = target;
-		this.state.oldCategory = category;
-		this.state.oldName = name;
-		this.state.chosenCategory = category;
+	};
+
+	openAddMenu = () => {
+		this.clearItemDialog();
+		this.state.addNewItem = true;
+		this.addItemDlg.MDComponent.show();
+	};
+
+	deleteItem = (item) => {
+		this.setState({ items: this.state.items.filter(i => i.Id !== item.Id) });
 	};
 
 	createShoppingList = () => {
-		if (!this.state.items)
+		if (!this.state.items || this.state.items.length === 0)
 			return;
 
 		let list = [];
+		//Find all unique categories
+		let categories = this.state.items.map(i => i.Category).filter((v,i,a) => a.indexOf(v) === i);
 
-		Object.entries(this.state.items).forEach(([category, wares]) => {
+		categories.forEach(c => {
+			let wares = this.state.items.filter(i => i.Category === c);
+
 			list.push(
 				<div>
-					<label>{category}</label>
+					<label>{c}</label>
 					<List class={style.revertMargin} Avatar>
-						{this.createListItems(category, wares)}
+						{this.createListItems(c, wares)}
 					</List>
 				</div>
 			);
@@ -70,94 +82,70 @@ export default class Shopping extends Component {
 		return list;
 	};
 
-	createShoppingCategories = () => {
-		if (!this.state.items)
-			return;
-
-		let list = [];
-		Object.entries(this.state.items).forEach(([catefory, wares]) => {
-			console.log(catefory);
-			list.push(
-				<Select.Item>{catefory}</Select.Item>
-			);
+	clearItemDialog = () => {
+		this.setState({
+			addNewItem: false,
+			newName: ''
 		});
-
-		return list;
-	};
-
-	onCategorySelectChange = (a, b, c) => {
-		let s = document.getElementById('food-category-select');
-		this.state.chosenCategory = s.firstChild.value;
-	};
-
-	showAddItemDialog = () => {
-		document.getElementById('food-category-select').firstChild.value = '';
-		document.getElementById('new-item-name').value = '';
-		this.state.addNewItem = true;
-		this.addItemDlg.MDComponent.show();
 	};
 
 	confirmItemDialog = (e) => {
-		let n = document.getElementById('new-item-name');
-		if (!n.value)
-		{
-			//TODO: Prevent dialog from hiding
-			this.addItemDlg.MDComponent.show();
-			//TODO: Add error message
-			return;
-		}
-		if (this.state.addNewItem) {
-			let itemsInCat = this.state.items[this.state.chosenCategory];
-			if (itemsInCat.includes(n.value))
-				return; //TODO: Add error message
+		//TODO: Prevent dialog from hiding if errors
+		let fd = new FormData();
+		fd.append('name', this.state.newName);
+		fd.append('category', this.autoCompleter.getRecommendation());
+		if (this.state.editWare)
+			fd.append('id', this.state.editWare.Id);
+		console.log(this.state);
+		fd.forEach(i => console.log(i));
 
-			Backend.addShoppingListItem(n.value, this.state.chosenCategory)
+		if (this.state.addNewItem) {
+			Backend.addShoppingListItem(fd)
 				.then(r => {
-					itemsInCat.push(n.value);
-					this.setState({ items: this.state.items });
-				})
-				.catch(e => {
-					//TODO: Add error message
-				});
+					this.clearItemDialog();
+					this.setState({ items: this.state.items.concat(r) });
+				}).catch(e => {});
 		}
 		else {
-			Backend.updateShoppingListItem(this.state.oldName, n.value, this.state.chosenCategory)
+			Backend.updateShoppingListItem(fd)
 				.then(r => {
-					let oldItems = this.state.items[this.state.oldCategory];
-					let index = oldItems.indexOf(this.state.oldName);
-					if (index !== -1) oldItems.splice(index, 1);
-
-					this.state.items[this.state.chosenCategory].push(n.value);
-					this.setState({ items: this.state.items });
-				})
-				.catch(e => {
-
-				});
+					this.clearItemDialog();
+					this.setState({ items: this.state.items.filter(i => i.Id !== this.state.editWare.Id).concat(r) });
+				}).catch(e => {});
 		}
 	};
 
+	createListItems(category, wares) {
+		let wareList = [];
+
+		for (const ware of wares) {
+			wareList.push(
+				<ShoppingListItem item={ware} onEditItem={this.openEditMenu} category={category} onDelete={this.deleteItem} />
+			);
+		}
+		return wareList;
+	}
+
 	render() {
 		return (
-			<div class="appContainer">
+			<div className="appContainer">
 				<h2>{window.lang.shoppingList}</h2>
 				{this.createShoppingList()}
 
-				<Dialog onAccept={this.confirmItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
+				<Dialog onAccept={this.confirmItemDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
 					<Dialog.Header>{window.lang.addToShoppingList}</Dialog.Header>
-					<Dialog.Body>
-						<TextField id="new-item-name" label="Name" required />
-						<Select class={style.hideFirstOption} id="food-category-select" hintText="Category"
-							onChange={this.onCategorySelectChange}
-						>
-							{this.createShoppingCategories()}
-						</Select>
+					<Dialog.Body className={style.centerChildren}>
+						<TextField className={style.wideInputField} id={this.state.itemNameId} onInput={linkState(this, 'newName')} value={this.state.newName} label="Name" required />
+						<AutoCompleter ref={ac => this.autoCompleter = ac} className={style.wideInputField}
+							items={this.state.items ? this.state.items.map(i => i.Category).filter((v,i,a) => a.indexOf(v) === i) : []}
+						/>
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton cancel >{window.lang.decline}</Dialog.FooterButton>
 						<Dialog.FooterButton accept >{window.lang.accept}</Dialog.FooterButton>
 					</Dialog.Footer>
 				</Dialog>
-				<Fab class={style.fabLowerRight} onClick={this.showAddItemDialog}><Fab.Icon>add_shopping_cart</Fab.Icon></Fab>
+				<Fab class={style.fabLowerRight} onClick={this.openAddMenu}><Fab.Icon>add_shopping_cart</Fab.Icon></Fab>
 			</div>
 		);
 	}

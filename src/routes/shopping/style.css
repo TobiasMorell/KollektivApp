@@ -25,17 +25,41 @@
     border-bottom: 1px solid lightgray;
 }
 
+/*.shoppingListItem:hover .checkbox {
+    color: var(--mdc-theme-primary);
+}*/
+
 .revertMargin {
     margin: 0 -16px;
 }
 
-.hideFirstOption select option:first-child {
-    display: none;
+.primaryOnHover:hover {
+    cursor: pointer;
+    color: var(--mdc-theme-primary);
 }
 
 .mdc-theme--dark .shoppingListItem {
     color: white;
     background-color: #4e4e4e;
+}
+
+.wideInputField {
+    width: 80%;
+}
+
+.addCategoryIcon {
+    font-size: 3.5em;
+}
+
+.addCategoryIcon:hover {
+    cursor: pointer;
+    color: var(--mdc-theme-primary);
+}
+
+.centerChildren > * {
+    margin: 10px auto;
+    text-align: center;
+    display: block;
 }
 
 @media(min-width: 1024px) {
