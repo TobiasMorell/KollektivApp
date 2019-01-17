@@ -9,13 +9,14 @@ const checkboxIcons = {
 	checked: 'check_box',
 	unchecked: 'check_box_outline_blank'
 };
-const editHoldTime = 1500;
+const editHoldTime = 1000;
 
 export default class ShoppingListItem extends Component {
 	state = {
 		listItemIcon: 'fastfood',
 		editTimer: null
 	};
+	editTimer = null;
 
 	toggleListItemTick = (e) => {
 		let active = !this.state.item.Active;
@@ -29,21 +30,23 @@ export default class ShoppingListItem extends Component {
 
 	startEditTimer = () => {
 		console.log('start timer');
-		this.state.editTimer = setTimeout(() => {
+		this.editTimer = setTimeout(() => {
 			console.log('edit');
-			this.state.editTimer = null;
+			this.editTimer = null;
 			this.openEdit();
 		}, editHoldTime);
 	};
-	abortEditTimer = () => {
-		console.log('aborting');
-		if (this.state.editTimer) {
-			clearTimeout(this.state.editTimer);
-			this.toggleListItemTick();
+	abortEditTimer = (takeAction = false) => e => {
+		if (this.editTimer) {
+			clearTimeout(this.editTimer);
+			this.editTimer = null;
+			if (takeAction)
+				this.toggleListItemTick();
 		}
 	};
 	openEdit = (e) => {
-		e.stopPropagation();
+		if (e)
+			e.stopPropagation();
 		this.onEditItem(this.state.item);
 	};
 
@@ -66,13 +69,15 @@ export default class ShoppingListItem extends Component {
 			checkBoxIcon = checkboxIcons.checked;
 
 		return (
-			<List.Item class={style.shoppingListItem} onClick={this.toggleListItemTick} ontouchstart={this.startEditTimer} ondragstart={this.abortEditTimer} ontouchend={this.abortEditTimer}>
+			<List.Item class={style.shoppingListItem} onClick={/Mobi|Android/i.test(navigator.userAgent) ? this.toggleListItemTick : undefined} ontouchstart={this.startEditTimer}
+				ontouchmove={this.abortEditTimer()} ontouchend={this.abortEditTimer(true)}
+			>
 				<List.ItemGraphic>{this.state.listItemIcon}</List.ItemGraphic>
 				<span>{this.state.item.Name}</span>
 				<span class={style.listEndCenter}>
 					<Icon class={style.checkbox}>{checkBoxIcon}</Icon>
 					<Icon className={[style.onlyDesktop, style.primaryOnHover].join(' ')} onClick={this.openEdit}>edit</Icon>
-					<Icon className={style.primaryOnHover} onClick={this.removeFromList} >delete_forever</Icon>
+					<Icon className={[style.onlyDesktop, style.primaryOnHover].join(' ')} onClick={this.removeFromList} >delete_forever</Icon>
 				</span>
 			</List.Item>
 		);

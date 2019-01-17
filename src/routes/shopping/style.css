@@ -44,7 +44,7 @@
 }
 
 .wideInputField {
-    width: 80%;
+    width: 95%;
 }
 
 .addCategoryIcon {
@@ -62,9 +62,34 @@
     display: block;
 }
 
+.onlyDesktop {
+    display: none;
+}
+
+.onlyMobile {
+    display: inherit;
+}
+
+.left {
+    position: absolute;
+    left: 8px;
+}
+
 @media(min-width: 1024px) {
     .fabLowerRight {
         bottom: 1.5rem;
         right: 1.5rem;
+    }
+
+    .wideInputField {
+        width: 80%;
+    }
+
+    .onlyDesktop {
+        display: inline-block;
+    }
+
+    .onlyMobile {
+        display: none;
     }
 }

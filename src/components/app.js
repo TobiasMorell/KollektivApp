@@ -37,8 +37,10 @@ export default class App extends Component {
 		window.lang = {
 			accept: 'Accept',
 			addToShoppingList: 'Add to shopping list',
+			editShoppingItem: 'Edit shopping item',
 			edit: 'Edit',
 			decline: 'Decline',
+			delete: 'Delete',
 			homeTitle: 'Welcome to Osteklokken\'s App',
 			news: 'News',
 			shoppingList: 'Shopping List',

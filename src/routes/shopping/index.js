@@ -16,10 +16,6 @@ import AutoCompleter from '../../components/AutoCompleter';
 import linkState from 'linkstate';
 import App from '../../components/app';
 
-function uniqueFunc(v, i, self) {
-	return self.indexOf(v) === i;
-}
-
 export default class Shopping extends Component {
 	state = {
 		items: null,
@@ -56,7 +52,12 @@ export default class Shopping extends Component {
 	};
 
 	deleteItem = (item) => {
-		this.setState({ items: this.state.items.filter(i => i.Id !== item.Id) });
+		Backend.deleteShoppingItem(item).then(() => {
+			App.Snackbar.MDComponent.show({ message: `${item.Name} was deleted` });
+			this.setState({ items: this.state.items.filter(i => i.Id !== item.Id) });
+		}).catch(e => {
+			App.Snackbar.MDComponent.show({ message: `Could not delete ${item.name}` });
+		});
 	};
 
 	createShoppingList = () => {
@@ -83,9 +84,11 @@ export default class Shopping extends Component {
 	};
 
 	clearItemDialog = () => {
+		this.autoCompleter.setRecommendation('');
 		this.setState({
 			addNewItem: false,
-			newName: ''
+			newName: '',
+			editWare: undefined
 		});
 	};
 
@@ -96,21 +99,20 @@ export default class Shopping extends Component {
 		fd.append('category', this.autoCompleter.getRecommendation());
 		if (this.state.editWare)
 			fd.append('id', this.state.editWare.Id);
-		console.log(this.state);
-		fd.forEach(i => console.log(i));
 
 		if (this.state.addNewItem) {
 			Backend.addShoppingListItem(fd)
 				.then(r => {
 					this.clearItemDialog();
-					this.setState({ items: this.state.items.concat(r) });
+					this.setState({ items: this.state.items.concat(r), editWare: undefined });
 				}).catch(e => {});
 		}
 		else {
 			Backend.updateShoppingListItem(fd)
 				.then(r => {
+					let newItems = this.state.items.filter(i => i.Id !== this.state.editWare.Id).concat(r);
+					this.setState({ items: newItems, editWare: undefined });
 					this.clearItemDialog();
-					this.setState({ items: this.state.items.filter(i => i.Id !== this.state.editWare.Id).concat(r) });
 				}).catch(e => {});
 		}
 	};
@@ -126,6 +128,12 @@ export default class Shopping extends Component {
 		return wareList;
 	}
 
+	deleteItemMobile = e => {
+		this.deleteItem(this.state.editWare);
+		this.clearItemDialog();
+		this.addItemDlg.MDComponent.close();
+	};
+
 	render() {
 		return (
 			<div className="appContainer">
@@ -133,7 +141,7 @@ export default class Shopping extends Component {
 				{this.createShoppingList()}
 
 				<Dialog onAccept={this.confirmItemDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
-					<Dialog.Header>{window.lang.addToShoppingList}</Dialog.Header>
+					<Dialog.Header>{this.state.addNewItem ? window.lang.addToShoppingList : window.lang.editShoppingItem}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
 						<TextField className={style.wideInputField} id={this.state.itemNameId} onInput={linkState(this, 'newName')} value={this.state.newName} label="Name" required />
 						<AutoCompleter ref={ac => this.autoCompleter = ac} className={style.wideInputField}
@@ -141,6 +149,7 @@ export default class Shopping extends Component {
 						/>
 					</Dialog.Body>
 					<Dialog.Footer>
+						<Dialog.FooterButton cancel onClick={this.deleteItemMobile} className={[style.onlyMobile, style.left].join(' ')}>{window.lang.delete}</Dialog.FooterButton>
 						<Dialog.FooterButton cancel >{window.lang.decline}</Dialog.FooterButton>
 						<Dialog.FooterButton accept >{window.lang.accept}</Dialog.FooterButton>
 					</Dialog.Footer>

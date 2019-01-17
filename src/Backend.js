@@ -91,8 +91,8 @@ export default class Backend {
      * @param shoppingListForm {FormData} - A form containing information about the new item.
      * @returns {Promise<Response|never>}
      */
-	static async addShoppingListItem(shoppingListForm) {
-		return await this._osteRequest('/api/shopping', 'POST', shoppingListForm, true);
+	static addShoppingListItem(shoppingListForm) {
+		return this._osteRequest('/api/shopping', 'POST', shoppingListForm, true);
 	}
 
 	/**
@@ -100,8 +100,8 @@ export default class Backend {
      * @param updateItemForm {FormData} - A form containing update information about the item.
      * @returns {Promise<Response|never>}
      */
-	static async updateShoppingListItem(updateItemForm) {
-		return await this._osteRequest('/api/shopping', 'PUT', updateItemForm, true);
+	static updateShoppingListItem(updateItemForm) {
+		return this._osteRequest('/api/shopping', 'PUT', updateItemForm, true);
 	}
 
 	static async setShoppingItemState(item, active) {
@@ -114,11 +114,10 @@ export default class Backend {
 		return this.updateShoppingListItem(formData);
 	}
 
-	static async deleteShoppingItem(item) {
+	static deleteShoppingItem(item) {
 		let formData = new FormData();
-		console.log(item);
 		formData.append('id', item.Id);
 
-		return await this._osteRequest('/api/shopping', 'DELETE', formData);
+		return this._osteRequest('/api/shopping', 'DELETE', formData);
 	}
 }
