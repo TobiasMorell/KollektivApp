@@ -9,10 +9,10 @@ export default class NotFound extends Component {
 			<div class={style.home}>
 				<Card>
 					<div class={style.cardHeader}>
-						<h2 class=" mdc-typography--title">404! {window.lang.notFound}</h2>
+						<h2 class=" mdc-typography--title">Siden blev ikke fundet</h2>
 					</div>
 					<div class={style.cardBody}>
-						{window.lang.notFoundDescription}
+						Den side du ledte efter kunne ikke findes,
 					</div>
 				</Card>
 			</div>

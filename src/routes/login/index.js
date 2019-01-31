@@ -7,7 +7,6 @@ import TextField from 'preact-material-components/TextField';
 import 'preact-material-components/TextField/style.css';
 import style from './style.css';
 import Button from 'preact-material-components/Button';
-import 'preact-material-components/Button/style.css';
 import Backend from '../../Backend';
 import App from '../../components/app';
 
@@ -68,9 +67,9 @@ export default class Login extends Component {
 	osteForm(callback, passwordLabel, submitLabel) {
 		return (
 			<form onSubmit={callback} >
-				<TextField name="username" class={style['wide-text-field']} label={window.lang.username} required />
+				<TextField name="username" class={style['wide-text-field']} label="Brugernavn" required />
 				<TextField name="password" class={style['wide-text-field']} label={passwordLabel} type="password" required />
-				<TextField name="registrant" class={style['wide-text-field']} label={window.lang.name} required />
+				<TextField name="registrant" class={style['wide-text-field']} label="Fulde navn" required />
 
 				<div>
 					<Button onclick={this.startLogin} type="button" outline>Back</Button>
@@ -91,12 +90,12 @@ export default class Login extends Component {
 	loginForm() {
 		return (
 			<form onSubmit={this.doLogin}>
-				<TextField name={'username'} class={style['wide-text-field']} label={window.lang.username} required />
-				<TextField name={'password'} class={style['wide-text-field']} label={window.lang.password} type="password" required />
+				<TextField name={'username'} class={style['wide-text-field']} label="Brugernavn" required />
+				<TextField name={'password'} class={style['wide-text-field']} label="Kodeord" type="password" required />
 				<div>
-					<Button onclick={this.startRegister} type="button" outline>Register</Button>
-					<Button onclick={this.startNewPassword} type="button" outline>Forgot Password</Button>
-					<Button class={style['login-btn']} raised ripple>{window.lang.login.toUpperCase()}</Button>
+					<Button onclick={this.startRegister} type="button" outline>Registrer</Button>
+					<Button onclick={this.startNewPassword} type="button" outline>Glemt kodeord?</Button>
+					<Button class={style['login-btn']} raised ripple>Log Ind</Button>
 				</div>
 			</form>
 		);
@@ -105,16 +104,16 @@ export default class Login extends Component {
 	render() {
 		let form, cardDescription;
 		if (this.state.action === 'forgot') {
-			form = this.osteForm(this.doNewPassword, window.lang.password, window.lang.reset);
-			cardDescription = <div class="mdc-typography--caption">{window.lang.newPasswordDescription}</div>;
+			form = this.osteForm(this.doNewPassword, 'Nyt kodeord', 'Nulstil');
+			cardDescription = <div class="mdc-typography--caption">Opdater kodeordet til din bruger.</div>;
 		}
 		else if (this.state.action === 'register') {
-			form = this.osteForm(this.doRegister, window.lang.newPassword, window.lang.register);
-			cardDescription = <div class="mdc-typography--caption">{window.lang.registerDescription}</div>;
+			form = this.osteForm(this.doRegister, 'Kodeord', 'Registrer');
+			cardDescription = <div class="mdc-typography--caption">Registrer en ny bruger - tal med Tobias før du går i gang.</div>;
 		}
 		else {
 			form = this.loginForm();
-			cardDescription = <div class="mdc-typography--caption">{window.lang.loginDescription}</div>;
+			cardDescription = <div class="mdc-typography--caption">Log ind på din bruger.</div>;
 		}
 
 		return (

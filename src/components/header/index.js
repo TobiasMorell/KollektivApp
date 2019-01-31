@@ -63,10 +63,10 @@ export default class Header extends Component {
 	OsteDrawer = ({ }) => (
 		<Drawer modal ref={this.drawerRef}>
 			<Drawer.DrawerContent>
-				<this.DrawerItem onSelected={this.goHome} icon="home" text={window.lang.news} selected={this.currentTab === ''} />
-				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text={window.lang.shoppingList} selected={this.currentTab === 'shopping'} />
-				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text={window.lang.cooking} selected={this.currentTab === 'cooking'} />
-				<this.DrawerItem onSelected={this.goToMyProfile} icon="account_circle" text={window.lang.profile} selected={this.currentTab === 'profile'} />
+				<this.DrawerItem onSelected={this.goHome} icon="home" text="Nyheder" selected={this.currentTab === ''} />
+				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste" selected={this.currentTab === 'shopping'} />
+				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning" selected={this.currentTab === 'cooking'} />
+				<this.DrawerItem onSelected={this.goToMyProfile} icon="account_circle" text="Profil" selected={this.currentTab === 'profile'} />
 			</Drawer.DrawerContent>
 		</Drawer>);
 
@@ -88,14 +88,14 @@ export default class Header extends Component {
 				</Toolbar>
 				<this.OsteDrawer />
 				<Dialog ref={this.dialogRef}>
-					<Dialog.Header>{window.lang.settings}</Dialog.Header>
+					<Dialog.Header>Indstillinger</Dialog.Header>
 					<Dialog.Body>
 						<div>
-							{window.lang.darkTheme} <Switch onClick={this.toggleDarkTheme} />
+							Anvend mørkt tema<Switch onClick={this.toggleDarkTheme} />
 						</div>
 					</Dialog.Body>
 					<Dialog.Footer>
-						<Dialog.FooterButton accept>{window.lang.ok}</Dialog.FooterButton>
+						<Dialog.FooterButton accept>OK</Dialog.FooterButton>
 					</Dialog.Footer>
 				</Dialog>
 			</div>

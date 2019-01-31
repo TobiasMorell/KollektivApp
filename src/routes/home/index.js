@@ -10,7 +10,7 @@ export default class Home extends Component {
 			<div class="appContainer">
 				<Card>
 					<div class={style.cardHeader}>
-						<h2 class=" mdc-typography--title">{lang.homeTitle}</h2>
+						<h2 class=" mdc-typography--title">Velkommen til Osteklokkens nye app!</h2>
 					</div>
 					<Card.Media>
 						<div>
@@ -18,8 +18,9 @@ export default class Home extends Component {
 						</div>
 					</Card.Media>
 					<div class={style.cardBody}>
-						I'm thrilled to welcome you to Osteklokken's new app. You can access the shopping list from the menu
-						on the left. In the same menu you may find information about who's cooking and what they're cooking.
+						Du kan se indkøbslisten at åbne menuen med knappen i øverste venstre hjørne. Når du tilføjer/markerer
+						ting bliver det automatisk opdateret hos de andre beboere. Du kan også tilgå madlavningsplanen, som
+						dog ikke er helt færdigudviklet endnu.
 					</div>
 				</Card>
 			</div>

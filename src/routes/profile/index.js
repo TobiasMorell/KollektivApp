@@ -24,7 +24,7 @@ export default class Profile extends Component {
 	render({ user }) {
 		return (
 			<div class={style.profile}>
-				<h1>{window.lang.profile}: {user}</h1>
+				<h1>Profil: {user}</h1>
 			</div>
 		);
 	}

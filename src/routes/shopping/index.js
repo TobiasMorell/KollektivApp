@@ -12,7 +12,7 @@ import ShoppingListItem from './ShoppingListItem';
 import Backend from '../../Backend';
 import Dialog from 'preact-material-components/Dialog';
 import 'preact-material-components/Dialog/style.css';
-import AutoCompleter from '../../components/AutoCompleter';
+import AutoCompleter from 'preact-material-autocompleter';
 import linkState from 'linkstate';
 import App from '../../components/app';
 
@@ -137,11 +137,11 @@ export default class Shopping extends Component {
 	render() {
 		return (
 			<div className="appContainer">
-				<h2>{window.lang.shoppingList}</h2>
+				<h2>Indkøbsliste</h2>
 				{this.createShoppingList()}
 
 				<Dialog onAccept={this.confirmItemDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
-					<Dialog.Header>{this.state.addNewItem ? window.lang.addToShoppingList : window.lang.editShoppingItem}</Dialog.Header>
+					<Dialog.Header>{this.state.addNewItem ? 'Tilføj til indkøbslisten' : 'Rediger indkøbslistepunkt'}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
 						<TextField className={style.wideInputField} id={this.state.itemNameId} onInput={linkState(this, 'newName')} value={this.state.newName} label="Name" required />
 						<AutoCompleter ref={ac => this.autoCompleter = ac} className={style.wideInputField}
@@ -149,9 +149,9 @@ export default class Shopping extends Component {
 						/>
 					</Dialog.Body>
 					<Dialog.Footer>
-						<Dialog.FooterButton cancel onClick={this.deleteItemMobile} className={[style.onlyMobile, style.left].join(' ')}>{window.lang.delete}</Dialog.FooterButton>
-						<Dialog.FooterButton cancel >{window.lang.decline}</Dialog.FooterButton>
-						<Dialog.FooterButton accept >{window.lang.accept}</Dialog.FooterButton>
+						<Dialog.FooterButton cancel onClick={this.deleteItemMobile} className={[style.onlyMobile, style.left].join(' ')}>Slet</Dialog.FooterButton>
+						<Dialog.FooterButton cancel >Afslå</Dialog.FooterButton>
+						<Dialog.FooterButton accept >Accepter</Dialog.FooterButton>
 					</Dialog.Footer>
 				</Dialog>
 				<Fab class={style.fabLowerRight} onClick={this.openAddMenu}><Fab.Icon>add_shopping_cart</Fab.Icon></Fab>

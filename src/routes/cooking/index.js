@@ -17,9 +17,9 @@ export default class Cooking extends Component {
 			<div>
 				<Card>
 					<div>
-						<h2 class=" mdc-typography--title">{window.lang.week} 40</h2>
-						<div class=" mdc-typography--caption">{window.lang.cooking}: Lasagna</div>
-						<div class="mdc-typography--caption">Cooked by: Tobias</div>
+						<h2 class=" mdc-typography--title">Uge 40</h2>
+						<div class=" mdc-typography--caption">Ret: Lasagna</div>
+						<div class="mdc-typography--caption">Tilberedt af: Tobias</div>
 					</div>
 					<Card.Actions>
 						<Card.ActionIcons>
