@@ -1,3 +1,5 @@
+*.litedb
+
 build/
 # Created by https://www.gitignore.io/api/rider,webstorm,visualstudio
 # Edit at https://www.gitignore.io/?templates=rider,webstorm,visualstudio
