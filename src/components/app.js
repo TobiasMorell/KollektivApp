@@ -33,16 +33,7 @@ export default class App extends Component {
 				<Router onChange={this.handleRoute}>
 					<Home path="/home" />
 					<Login path="/" />
-
-					<NotFound default />
-				</Router>
-			</div>
-		);
-	}
-}
-
-/*
-<AsyncRoute
+					<AsyncRoute
 						path="/shopping"
 						getComponent={() => import('../routes/shopping').then(m => m.default)}
 					/>
@@ -58,4 +49,9 @@ export default class App extends Component {
 						path="/profile"
 						getComponent={() => import('../routes/profile').then(m => m.default)}
 					/>
- */
+					<NotFound default />
+				</Router>
+			</div>
+		);
+	}
+}
