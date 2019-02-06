@@ -31,8 +31,6 @@ export default class Login extends Component {
 		let loginForm = new FormData(e.srcElement);
 
 		Backend.login(loginForm).then((r) => {
-			//TODO: Send session details (name and profile picture) with the response).
-			console.log(r);
 			route('/home');
 		}).catch(e => {
 			toast('Login mislykkedes', e, 'error');
@@ -123,9 +121,12 @@ export default class Login extends Component {
 		return (
 			<div className={style['login-card']}>
 				<Card ripple raised>
-					<h2 class="mdc-typography--title">Osteklokken</h2>
+					<h2 class="mdc-typography--title">Kollektivet Osteklokken</h2>
 					{cardDescription}
 					<div class="card-media">
+						<div className={style.logoBox}>
+							<img src="/assets/osteklokken-logo.png" />
+						</div>
 						{form}
 					</div>
 				</Card>

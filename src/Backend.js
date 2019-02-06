@@ -1,7 +1,16 @@
-import App from './components/app.js';
-import { route } from 'preact-router';
-
 export default class Backend {
+	session = undefined;
+
+	static getSessionDetails () {
+		if (this.session) return this.session;
+		let s = localStorage.getItem('session');
+		if (s) {
+			let session = JSON.parse(s);
+			this.session = session;
+			return session;
+		}
+	}
+
 	/**
 	 * Sends a request to the backend.
      * @param url {string} - The url to send the url to.
@@ -31,12 +40,7 @@ export default class Backend {
 			return parsedResponse;
 		}
 
-		if (res.status === 401) {
-			route('/login');
-		}
-
 		let error = await res.text();
-		App.Snackbar.MDComponent.show({ message: error });
 		throw Error(error);
 	}
 
@@ -46,8 +50,16 @@ export default class Backend {
 	 * @returns {Promise} - A promise that is either accepted or rejected depending on the response from the server.
 	 */
 	static async login(loginForm) {
-		return await this._osteRequest('/api/login', 'POST', loginForm);
+		let s = await this._osteRequest('/api/login', 'POST', loginForm);
+		if (s) {
+			let session = JSON.parse(s);
+			this.session = session;
+			localStorage.setItem('session', s);
+			return session;
+		}
+		throw new Error(s ? s : 'Could not log in');
 	}
+
 
 	/**
 	 * Logs out of the app.
@@ -57,7 +69,10 @@ export default class Backend {
 		return await fetch('/api/logout',
 			{
 				method: 'POST'
-			}).then(r => r.json());
+			}).then(r => {
+			console.log(r);
+			return r;
+		});
 	}
 
 	/**

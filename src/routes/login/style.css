@@ -17,3 +17,12 @@
 .login-btn {
     float: right;
 }
+
+.logoBox {
+    max-width: 60%;
+    margin: 0 auto;
+}
+
+.logoBox img {
+    width: 100%;
+}

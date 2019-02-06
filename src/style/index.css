@@ -1,5 +1,6 @@
 :root {
     --mdc-theme-primary: #ff9800 !important;
+    --mdc-theme-secondary: #00BCD4 !important;
 }
 
 .mdc-list-item__graphic {

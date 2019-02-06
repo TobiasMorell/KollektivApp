@@ -57,7 +57,10 @@ namespace OsteklokkenServer
                         Username = user.Username,
                         Name = user.Name
                     });
-                    await res.SendStatus(HttpStatusCode.OK);
+                    await res.SendJson(new {
+                        name = user.Name,
+                        avatar = $"/assets/avatars/{user.Name.Split()[0].ToLower()}.png"
+                    });
                 }
                 else
                 {
@@ -67,7 +70,8 @@ namespace OsteklokkenServer
             
             server.Post("/api/logout", Auth, async (req, res) =>
             {
-                req.GetSession<OsteSession>().Close(req);
+                var session = req.GetSession<OsteSession>();
+                session?.Close(req);
                 await res.SendStatus(HttpStatusCode.OK);
             });
             
