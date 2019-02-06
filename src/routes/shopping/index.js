@@ -1,5 +1,4 @@
 import { h, Component } from 'preact';
-import 'preact-material-components/Card/style.css';
 import TextField from 'preact-material-components/TextField';
 import 'preact-material-components/TextField/style.css';
 import 'preact-material-components/Button/style.css';
@@ -14,7 +13,7 @@ import Dialog from 'preact-material-components/Dialog';
 import 'preact-material-components/Dialog/style.css';
 import AutoCompleter from 'preact-material-autocompleter';
 import linkState from 'linkstate';
-import App from '../../components/app';
+import toast from '../../components/toast';
 
 export default class Shopping extends Component {
 	state = {
@@ -31,7 +30,7 @@ export default class Shopping extends Component {
 				items: i
 			});
 		}).catch(e => {
-			App.Snackbar.MDComponent.show('Could not get shopping list');
+			toast('Indkøbslisten kunne ikke hentes', e, 'error');
 		});
 	}
 
@@ -53,10 +52,10 @@ export default class Shopping extends Component {
 
 	deleteItem = (item) => {
 		Backend.deleteShoppingItem(item).then(() => {
-			App.Snackbar.MDComponent.show({ message: `${item.Name} was deleted` });
+			toast(`${item.name} blev slettet`);
 			this.setState({ items: this.state.items.filter(i => i.Id !== item.Id) });
 		}).catch(e => {
-			App.Snackbar.MDComponent.show({ message: `Could not delete ${item.name}` });
+			toast(`${item.name} kunne ikke slettes`, e, 'error');
 		});
 	};
 

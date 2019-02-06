@@ -8,7 +8,7 @@ import 'preact-material-components/TextField/style.css';
 import style from './style.css';
 import Button from 'preact-material-components/Button';
 import Backend from '../../Backend';
-import App from '../../components/app';
+import toast from '../../components/toast';
 
 export default class Login extends Component {
 
@@ -20,20 +20,22 @@ export default class Login extends Component {
 		password: 'password'
 	};
 
-	constructor(){
-		super();
-		this.state = { action: 'login' };
-	}
+	componentWillMount = () => {
+		if (Backend.getSessionDetails()) {
+			route('/home');
+		}
+	};
 
 	doLogin = (e) => {
 		e.preventDefault();
 		let loginForm = new FormData(e.srcElement);
 
 		Backend.login(loginForm).then((r) => {
-			if (r) {
-				console.log(r);
-				route('/');
-			}
+			//TODO: Send session details (name and profile picture) with the response).
+			console.log(r);
+			route('/home');
+		}).catch(e => {
+			toast('Login mislykkedes', e, 'error');
 		});
 	};
 
@@ -42,8 +44,10 @@ export default class Login extends Component {
 		let registerForm = new FormData(e.srcElement);
 
 		Backend.register(registerForm).then((r) => {
-			console.log(r);
-			route('/');
+			toast('Din bruger blev registreret');
+			route('/home');
+		}).catch(e => {
+			toast('Din bruger kunne ikke registreres', e, 'error');
 		});
 	}
 
@@ -52,10 +56,10 @@ export default class Login extends Component {
 		let newPasswordForm = new FormData(e.srcElement);
 
 		Backend.updatePassword(newPasswordForm).then(r => {
-			console.log(r);
-			App.Snackbar.MDComponent.show({
-				msg: 'Password updated'
-			});
+			toast('Din kode blev opdateret');
+			this.setState({ action: 'login' });
+		}).catch(e => {
+			toast('Din kode kunne ikke nulstilles', e, 'error');
 		});
 	}
 

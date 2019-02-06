@@ -1,7 +1,9 @@
 .login-card {
     max-width: 60%;
     margin: 1vh auto auto;
-    padding: 10px;
+}
+.login-card > div {
+    padding: 16px;
 }
 
 .login-card form > div {

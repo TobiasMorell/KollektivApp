@@ -3,25 +3,18 @@ import { Router } from 'preact-router';
 
 import Header from './header';
 import Home from '../routes/home';
-import Profile from '../routes/profile';
 import Login from '../routes/login';
-import Cooking from '../routes/cooking';
-import Shopping from '../routes/shopping';
 import NotFound from '../routes/404';
-// import Home from 'async!../routes/home';
-// import Profile from 'async!../routes/profile';
-import Snackbar from 'preact-material-components/Snackbar';
-import 'preact-material-components/Snackbar/style.css';
+import AsyncRoute from 'preact-async-route';
+import toast from './toast';
+import '../style/index.css';
+import '../style/toastr.css';
 
 export default class App extends Component {
-	static Snackbar;
-
 	componentDidCatch(error, errorInfo) {
 		//This does not work yet, but will so soon (hopefully)
 		console.error(error, errorInfo);
-		App.Snackbar.MDComponent.show({
-			message: error
-		});
+		toast('Ups! Der skete en fejl', error, 'error');
 	}
 
 	/** Gets fired when the route changes.
@@ -38,15 +31,26 @@ export default class App extends Component {
 			<div id="app">
 				<Header />
 				<Router onChange={this.handleRoute}>
-					<Home path="/" />
-					<Login path="/login" />
-					<Shopping path="/shopping" />
-					<Cooking path="/cooking" />
-					<Profile path="/profile/" user="me" />
-					<Profile path="/profile/:user" />
+					<Home path="/home" />
+					<Login path="/" />
+					<AsyncRoute
+						path="/shopping"
+						getComponent={() => import('../routes/shopping').then(m => m.default)}
+					/>
+					<AsyncRoute
+						path="/cooking"
+						getComponent={() => import('../routes/cooking').then(m => m.default)}
+					/>
+					<AsyncRoute
+						path="/kollexicon"
+						getComponent={() => import('../routes/kollexicon').then(m => m.default)}
+					/>
+					<AsyncRoute
+						path="/profile"
+						getComponent={() => import('../routes/profile').then(m => m.default)}
+					/>
 					<NotFound default />
 				</Router>
-				<Snackbar ref={bar => App.Snackbar = bar} />
 			</div>
 		);
 	}

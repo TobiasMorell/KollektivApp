@@ -1,0 +1,108 @@
+.searchRules {
+    width: 100%;
+    margin: auto;
+}
+.searchRules > div {
+    width: 100%;
+}
+.searchRules p {
+    text-align: left;
+}
+
+.foldOutHeader {
+    font-size: 1.2em;
+    background-color: #eee;
+    padding: 8px;
+    transition: background-color 0.15s;
+}
+.foldOutHeader:hover {
+    cursor: pointer;
+    background-color: #ffc947;
+}
+.foldOutHeader i {
+    vertical-align: bottom;
+    float: right;
+    -webkit-transition: transform 0.3s;
+    -moz-transition: transform 0.3s;
+    -ms-transition: transform 0.3s;
+    -o-transition: transform 0.3s;
+    transition: transform 0.3s;
+}
+
+.ruleDescription {
+    max-height: 0;
+    transition: max-height 0.15s ease-out, padding 0.15s ease-out 0.12s;
+    overflow: hidden;
+    border: 1px solid #d3d3d3;
+    text-align: left;
+}
+.ruleDescription div:not(:last-child) {
+    padding-bottom: 8px;
+}
+.ruleDescription i.tab {
+    width: 8px;
+}
+.ruleDescription i.underline {
+    text-decoration: underline;
+}
+
+.foldOut.expanded .ruleDescription {
+    max-height: 1000px;
+    transition: max-height 0.25s ease-in, padding-top 0s ease-in;
+    padding: 8px;
+}
+
+i.expandAnimation {
+    animation: rotate 0.8s;
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+@keyframes rotate {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    80% {
+        -webkit-transform: rotate(200deg);
+        -moz-transform: rotate(200deg);
+        -ms-transform: rotate(200deg);
+        -o-transform: rotate(200deg);
+        transform: rotate(200deg);
+    }
+    100% {
+        -webkit-transform: rotate(180deg);
+        -moz-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        -o-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+}
+
+.home {
+    padding: 20px;
+    min-height: 100%;
+    width: 100%;
+}
+
+.cardHeader {
+    padding: 16px;
+}
+
+.cardBody {
+    padding: 16px;
+    text-align: center;
+    max-height: 550px;
+    overflow-x: scroll;
+}
+
+.cardMedia {
+    width: 80%;
+    max-width: 300px;
+}
