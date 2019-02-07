@@ -32,8 +32,8 @@ export default class Header extends Component {
 	};
 
 	logout = () => {
+		this.toggleDropdown();
 		Backend.logout().then(r => {
-			console.log(r);
 			localStorage.removeItem('session');
 			route('/');
 		}).catch(e => {
@@ -48,28 +48,29 @@ export default class Header extends Component {
 	goToKollexicon = this.linkTo('/kollexicon');
 
 	DrawerItem = ({ onSelected, icon, text, selected } ) => (
-		<Drawer.DrawerItem onClick={onSelected} selected={selected} class={selected ? style['black-text'] : ''}>
+		<Drawer.DrawerItem onClick={onSelected} selected={selected}>
 			<List.ItemGraphic>{icon}</List.ItemGraphic>
 			{text}
 		</Drawer.DrawerItem>);
 
 	toggleDropdown = () => {
 		this.setState({ dropdownShown: !this.state.dropdownShown });
-	}
+	};
 
 	OsteDrawer = ({ }) => (
 		<Drawer modal ref={this.drawerRef}>
 			<Drawer.DrawerContent>
-				<this.DrawerItem onSelected={this.goHome} icon="home" text="Nyheder" selected={this.currentTab === ''} />
-				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste" selected={this.currentTab === 'shopping'} />
-				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning" selected={this.currentTab === 'cooking'} />
-				<this.DrawerItem onSelected={this.goToKollexicon} icon="gavel" text="Kolleksikon" selected={this.currentTab === 'kollexicon'} />
-				<this.DrawerItem onSelected={this.goToMyProfile} icon="account_circle" text="Profil" selected={this.currentTab === 'profile'} />
+				<this.DrawerItem onSelected={this.goHome} icon="home" text="Nyheder" selected={true} />
+				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste"  />
+				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning"  />
+				<this.DrawerItem onSelected={this.goToKollexicon} icon="gavel" text="Kolleksikon"  />
 			</Drawer.DrawerContent>
 		</Drawer>);
 
-	render() {
+	render({ displayed }) {
 		let s = Backend.getSessionDetails();
+		if (displayed || !s)
+			return;
 
 		return (
 			<div>

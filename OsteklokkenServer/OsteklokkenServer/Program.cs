@@ -70,20 +70,22 @@ namespace OsteklokkenServer
             
             server.Post("/api/logout", Auth, async (req, res) =>
             {
-                var session = req.GetSession<OsteSession>();
-                session?.Close(req);
-                await res.SendStatus(HttpStatusCode.OK);
+                try
+                {
+                    var session = req.GetSession<OsteSession>();
+                    session?.Close(req);
+                    await res.SendStatus(HttpStatusCode.OK);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    await res.SendString("Logout not yet supported", status: HttpStatusCode.InternalServerError);
+                }
             });
             
             server.Post("/api/register", async (req, res) =>
             {
-                Console.WriteLine("Registration request");
                 var form = await req.GetFormDataAsync();
-
-                foreach (var f in form)
-                {
-                    Console.WriteLine(f);
-                }
 
                 if (!User.IsValidForm(form))
                 {
@@ -102,14 +104,7 @@ namespace OsteklokkenServer
                     await res.SendString("Sorry, you are not allowed to register here. Talk to Tobias if this is wrong", status: HttpStatusCode.BadRequest);
                     return;
                 }
-                else
-                {
-                    var newAllowedRegistrant = allowedRegistrants.Where(r => r != registrant);
-                    File.Delete("./AllowedUsers.txt");
-                    File.WriteAllLinesAsync("./AllowedUsers.txt", newAllowedRegistrant);
-                }
 
-                Console.WriteLine("Checking username");
                 var userWithSameUsername = users.FindOne(u => u.Username == username);
                 if (userWithSameUsername != null)
                 {
@@ -117,7 +112,6 @@ namespace OsteklokkenServer
                     return;
                 }
 
-                Console.WriteLine("Creating user");
                 var user = new User()
                 {
                     Id = User.NewId(),
@@ -142,7 +136,6 @@ namespace OsteklokkenServer
                     Name = registrant
                 });
 
-                Console.WriteLine("OK");
                 await res.SendStatus(HttpStatusCode.OK);
             });
             

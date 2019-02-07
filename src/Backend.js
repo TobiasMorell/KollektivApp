@@ -1,5 +1,5 @@
 export default class Backend {
-	session = undefined;
+	static session = undefined;
 
 	static getSessionDetails () {
 		if (this.session) return this.session;
@@ -65,12 +65,9 @@ export default class Backend {
 	 * Logs out of the app.
      * @returns {Promise<Response | never>}
      */
-	static async logout() {
-		return await fetch('/api/logout',
-			{
-				method: 'POST'
-			}).then(r => {
-			console.log(r);
+	static logout() {
+		return fetch('/api/logout', { method: 'POST' }).then(r => {
+			this.session = undefined;
 			return r;
 		});
 	}

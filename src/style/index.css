@@ -50,21 +50,19 @@ html, body {
 }
 
 #app {
-	height: 100%;
-}
-
-.mdc-theme--dark {
-	background-color: #333;
-	color: #fff;
-}
-
-.mdc-theme--dark .mdc-card {
-  color: #444;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
 }
 
 .mdc-card {
-    margin: 16px;
+    margin: 8px 0;
     padding: 8px;
+    max-height: 96%;
+    overflow-y: scroll;
 }
 
 .mdc-card__media div {
@@ -73,12 +71,16 @@ html, body {
 
 .mdc-typography--title {
     margin-top: 0;
+    margin-bottom: 0;
 }
 
 .appContainer {
     padding: 0 16px;
-    min-height: 100%;
     width: 100%;
+    position: absolute;
+    top: 56px;
+    bottom: 0;
+    overflow: hidden;
 }
 
 .mdc-select {
@@ -87,6 +89,24 @@ html, body {
 
 .mdc-text-field--focused:not(.mdc-text-field--invalid) .mdc-floating-label {
     color: var(--mdc-theme-primary) !important;
+}
+
+.mdc-list-item--activated {
+    color: black !important;
+    font-weight: bold !important;
+
+}
+
+::-webkit-scrollbar {
+    width: 0;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+@media only screen and (max-width: 1023px) {
+    .mdc-card > div,
+    .mdc-card {
+        scrollbar-width: none
+    }
 }
 
 @media(min-width: 1024px) {

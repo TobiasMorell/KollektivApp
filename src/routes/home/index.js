@@ -18,9 +18,7 @@ export default class Home extends Component {
 						</div>
 					</Card.Media>
 					<div class={style.cardBody}>
-						Du kan se indkøbslisten at åbne menuen med knappen i øverste venstre hjørne. Når du tilføjer/markerer
-						ting bliver det automatisk opdateret hos de andre beboere. Du kan også tilgå madlavningsplanen, som
-						dog ikke er helt færdigudviklet endnu.
+						Du kan se indkøbslisten at åbne menuen med knappen i øverste venstre hjørne. Her findes mange brugbare værktøjer til ostefolket.
 					</div>
 				</Card>
 			</div>

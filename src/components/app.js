@@ -22,6 +22,11 @@ export default class App extends Component {
 	 *	@param {string} event.url	The newly routed URL
 	 */
 	handleRoute = e => {
+		if (this.currentUrl === '/' && e.url !== '/')
+			this.setState({ displayHeader: true });
+		else if (this.currentUrl !== '/' && e.url === '/')
+			this.setState({ displayHeader: false });
+
 		this.currentUrl = e.url;
 	};
 
@@ -31,7 +36,7 @@ export default class App extends Component {
 			<div id="app">
 				<Header />
 				<Router onChange={this.handleRoute}>
-					<Home path="/home" />
+					<Home path="/home" displayed={this.state.displayHeader} />
 					<Login path="/" />
 					<AsyncRoute
 						path="/shopping"
@@ -44,10 +49,6 @@ export default class App extends Component {
 					<AsyncRoute
 						path="/kollexicon"
 						getComponent={() => import('../routes/kollexicon').then(m => m.default)}
-					/>
-					<AsyncRoute
-						path="/profile"
-						getComponent={() => import('../routes/profile').then(m => m.default)}
 					/>
 					<NotFound default />
 				</Router>

@@ -37,6 +37,7 @@
     margin-right: 8px;
     overflow: hidden;
     transition: max-height 0.15s;
+    z-index: 10;
 }
 .settingsDropdown div {
     padding: 16px;
@@ -53,9 +54,9 @@
 }
 
 .settingsDropdown.shown {
-    -webkit-animation: tumbleDown 0.5s;
-    -o-animation: tumbleDown 0.5s;
-    animation: tumbleDown 0.5s;
+    -webkit-animation: tumbleDown 0.3s;
+    -o-animation: tumbleDown 0.3s;
+    animation: tumbleDown 0.3s;
     border: 1px solid #d3d3d3;
     max-height: 200px;
 }

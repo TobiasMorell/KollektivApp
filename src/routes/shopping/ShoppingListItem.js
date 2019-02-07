@@ -29,9 +29,7 @@ export default class ShoppingListItem extends Component {
 	//TODO: Check if user swipes, cancel timeout if so
 
 	startEditTimer = () => {
-		console.log('start timer');
 		this.editTimer = setTimeout(() => {
-			console.log('edit');
 			this.editTimer = null;
 			this.openEdit();
 		}, editHoldTime);
@@ -59,6 +57,10 @@ export default class ShoppingListItem extends Component {
 		});
 	};
 
+	clickHandler = () => {
+		return /Mobi|Android/i.test(navigator.userAgent) ? undefined : this.toggleListItemTick;
+	};
+
 	render({ item, onEditItem, category, onDelete }) {
 		let checkBoxIcon = checkboxIcons.unchecked;
 		this.onEditItem = onEditItem;
@@ -69,13 +71,13 @@ export default class ShoppingListItem extends Component {
 			checkBoxIcon = checkboxIcons.checked;
 
 		return (
-			<List.Item class={style.shoppingListItem} onClick={/Mobi|Android/i.test(navigator.userAgent) ? this.toggleListItemTick : undefined} ontouchstart={this.startEditTimer}
+			<List.Item class={style.shoppingListItem} onClick={this.clickHandler()} ontouchstart={this.startEditTimer}
 				ontouchmove={this.abortEditTimer()} ontouchend={this.abortEditTimer(true)}
 			>
 				<List.ItemGraphic>{this.state.listItemIcon}</List.ItemGraphic>
 				<span>{this.state.item.Name}</span>
-				<span class={style.listEndCenter}>
-					<Icon class={style.checkbox}>{checkBoxIcon}</Icon>
+				<span className={style.listEndCenter}>
+					<Icon className={style.checkbox}>{checkBoxIcon}</Icon>
 					<Icon className={[style.onlyDesktop, style.primaryOnHover].join(' ')} onClick={this.openEdit}>edit</Icon>
 					<Icon className={[style.onlyDesktop, style.primaryOnHover].join(' ')} onClick={this.removeFromList} >delete_forever</Icon>
 				</span>

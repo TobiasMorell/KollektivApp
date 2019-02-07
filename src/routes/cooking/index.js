@@ -14,7 +14,7 @@ export default class Cooking extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className="appContainer">
 				<Card>
 					<div>
 						<h2 class=" mdc-typography--title">Uge 40</h2>

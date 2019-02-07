@@ -31,6 +31,7 @@ export default class Login extends Component {
 		let loginForm = new FormData(e.srcElement);
 
 		Backend.login(loginForm).then((r) => {
+			e.srcElement.reset();
 			route('/home');
 		}).catch(e => {
 			toast('Login mislykkedes', e, 'error');
