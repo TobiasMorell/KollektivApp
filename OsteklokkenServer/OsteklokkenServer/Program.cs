@@ -21,13 +21,18 @@ namespace OsteklokkenServer
             var db = new LiteDatabase("osteklokken.litedb");
             var users = db.GetCollection<User>("users");
             var shoppingItems = db.GetCollection<ShoppingItem>("shoppingItems");
+            var cookingSchedule = db.GetCollection<Cooking>("cooking");
             
-            server.Use(new CookieSessions(new CookieSessionSettings(TimeSpan.FromDays(14))));
+            server.Use(new CookieSessions<OsteSession>(
+                new CookieSessionSettings(TimeSpan.FromDays(14))
+                {
+                    Secure = false
+                }));
             
             async Task Auth(Request req, Response res)
             {
-                //if (req.GetSession<OsteSession>() == null)
-                //    await res.SendStatus(HttpStatusCode.Unauthorized);
+                if (req.GetSession<OsteSession>() == null)
+                    await res.SendStatus(HttpStatusCode.Unauthorized);
             }
             
             server.Post("/api/login", async (req, res) =>
@@ -97,7 +102,7 @@ namespace OsteklokkenServer
                 string password = form["password"];
                 string registrant = form["registrant"];
 
-                var allowedRegistrants = File.ReadAllLines("./AllowedUsers.txt");
+                var allowedRegistrants = await File.ReadAllLinesAsync("./AllowedUsers.txt");
 
                 if (!allowedRegistrants.Contains(registrant))
                 {
@@ -234,6 +239,94 @@ namespace OsteklokkenServer
                 }
 
                 shoppingItems.Delete(form["id"].ToString());
+                await res.SendStatus(HttpStatusCode.OK);
+            });
+            
+            server.Get("/api/cooking", Auth, async (req, res) =>
+            {
+                var c = cookingSchedule.FindAll();
+                await res.SendJson(c);
+            });
+            server.Post("/api/cooking", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("chef") || !form.ContainsKey("meal") || !form.ContainsKey("week"))
+                {
+                    await res.SendString("'name' or 'category' is missing.", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+                if (!int.TryParse(form["week"], out var week))
+                {
+                    await res.SendString("'week' must be an int");
+                    return;
+                }
+
+                var items = cookingSchedule.Find(item => item.Week == week);
+                if (items.Any())
+                {
+                    await res.SendString("Der findes allerede et måltid for den uge", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                var i = new Cooking()
+                {
+                    Week = week,
+                    Chef = form["chef"],
+                    Meal = form["meal"]
+                };
+                cookingSchedule.Insert(i);
+                await res.SendJson(i);
+            });
+            server.Put("/api/cooking", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("chef") || !form.ContainsKey("meal") || !form.ContainsKey("week"))
+                {
+                    await res.SendString("'name' or 'category' is missing.", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+                if (!int.TryParse(form["week"], out var week))
+                {
+                    await res.SendString("'week' must be an int");
+                    return;
+                }
+
+                var items = cookingSchedule.FindOne(i => i.Week == week);
+                if (items == null)
+                {
+                    await res.SendString("Der findes ikke noget måltid for den uge", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                items.Week = week;
+                items.Meal = form["meal"];
+                items.Chef = form["chef"];
+                cookingSchedule.Update(items);
+                await res.SendJson(items);
+            });
+            
+            server.Delete("/api/cooking", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("week"))
+                {
+                    await res.SendString("'week' is missing", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+                if (!int.TryParse(form["week"], out var week))
+                {
+                    await res.SendString("'week' must be an int", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                var m = cookingSchedule.FindOne(w => w.Week == week);
+                if (m == null)
+                {
+                    await res.SendString("Der er ikke nogen menu for den uge", status: HttpStatusCode.NotFound);
+                    return;
+                }
+
+                cookingSchedule.Delete(m.Week);
                 await res.SendStatus(HttpStatusCode.OK);
             });
 

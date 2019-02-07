@@ -52,10 +52,10 @@ export default class Shopping extends Component {
 
 	deleteItem = (item) => {
 		Backend.deleteShoppingItem(item).then(() => {
-			toast(`${item.name} blev slettet`);
-			this.setState({ items: this.state.items.filter(i => i.Id !== item.Id) });
+			toast(`${item.Name} blev slettet`);
+			this.setState({ upForDeletion: item });
 		}).catch(e => {
-			toast(`${item.name} kunne ikke slettes`, e, 'error');
+			toast(`${item.Name} kunne ikke slettes`, e, 'error');
 		});
 	};
 
@@ -104,7 +104,9 @@ export default class Shopping extends Component {
 				.then(r => {
 					this.clearItemDialog();
 					this.setState({ items: this.state.items.concat(r), editWare: undefined });
-				}).catch(e => {});
+				}).catch(e => {
+					toast('Kunne ikke tilføje til indkøbslisten', e, 'error');
+				});
 		}
 		else {
 			Backend.updateShoppingListItem(fd)
@@ -112,7 +114,9 @@ export default class Shopping extends Component {
 					let newItems = this.state.items.filter(i => i.Id !== this.state.editWare.Id).concat(r);
 					this.setState({ items: newItems, editWare: undefined });
 					this.clearItemDialog();
-				}).catch(e => {});
+				}).catch(e => {
+					toast('Kunne ikke opdatere punkt', e, 'error');
+				});
 		}
 	};
 
@@ -120,9 +124,18 @@ export default class Shopping extends Component {
 		let wareList = [];
 
 		for (const ware of wares) {
-			wareList.push(
-				<ShoppingListItem item={ware} onEditItem={this.openEditMenu} category={category} onDelete={this.deleteItem} />
-			);
+			if (ware === this.state.upForDeletion) {
+				let item =  <ShoppingListItem item={ware} className={style.delete} />;
+				console.log(item);
+				setTimeout(() => {
+					this.setState({ items: this.state.items.filter(i => i.Id !== ware.Id), upForDeletion: undefined });
+				}, 510);
+				wareList.push(item);
+			}
+			else
+				wareList.push(
+					<ShoppingListItem item={ware} onEditItem={this.openEditMenu} category={category} onDelete={this.deleteItem} />
+				);
 		}
 		return wareList;
 	}
@@ -135,22 +148,23 @@ export default class Shopping extends Component {
 
 	render() {
 		return (
-			<div className="appContainer">
-				<h2>Indkøbsliste</h2>
+			<div className={['appContainer', style.scrollable].join(' ')}>
+				<h2 className={style.title}>Indkøbsliste</h2>
+				<div className={['mdc-typography--caption', style.description].join(' ')}>Marker de varer vi mangler af.</div>
 				{this.createShoppingList()}
 
 				<Dialog onAccept={this.confirmItemDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
 					<Dialog.Header>{this.state.addNewItem ? 'Tilføj til indkøbslisten' : 'Rediger indkøbslistepunkt'}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
-						<TextField className={style.wideInputField} id={this.state.itemNameId} onInput={linkState(this, 'newName')} value={this.state.newName} label="Name" required />
-						<AutoCompleter ref={ac => this.autoCompleter = ac} className={style.wideInputField}
+						<TextField className={style.wideInputField} id={this.state.itemNameId} onInput={linkState(this, 'newName')} value={this.state.newName} label="Navn" required />
+						<AutoCompleter ref={ac => this.autoCompleter = ac} className={style.wideInputField} hintText="Vælg en kategori" allowAddNewItems
 							items={this.state.items ? this.state.items.map(i => i.Category).filter((v,i,a) => a.indexOf(v) === i) : []}
 						/>
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton cancel onClick={this.deleteItemMobile} className={[style.onlyMobile, style.left].join(' ')}>Slet</Dialog.FooterButton>
-						<Dialog.FooterButton cancel >Afslå</Dialog.FooterButton>
-						<Dialog.FooterButton accept >Accepter</Dialog.FooterButton>
+						<Dialog.FooterButton cancel >Annuller</Dialog.FooterButton>
+						<Dialog.FooterButton accept >Gem</Dialog.FooterButton>
 					</Dialog.Footer>
 				</Dialog>
 				<Fab class={style.fabLowerRight} onClick={this.openAddMenu}><Fab.Icon>add_shopping_cart</Fab.Icon></Fab>

@@ -1,9 +1,10 @@
 .login-card {
-    max-width: 60%;
+    max-width: 96%;
     margin: 1vh auto auto;
+    overflow-x: scroll;
 }
 .login-card > div {
-    padding: 16px;
+    padding: 8px;
 }
 
 .login-card form > div {
@@ -19,10 +20,20 @@
 }
 
 .logoBox {
-    max-width: 60%;
+    max-width: 30%;
     margin: 0 auto;
 }
 
 .logoBox img {
     width: 100%;
+}
+
+@media (min-width: 1024px){
+    .login-card {
+        max-width: 60%;
+    }
+
+    .login-card > div {
+        padding: 16px;
+    }
 }

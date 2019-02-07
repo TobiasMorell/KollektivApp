@@ -22,19 +22,20 @@ export default class App extends Component {
 	 *	@param {string} event.url	The newly routed URL
 	 */
 	handleRoute = e => {
-		if (this.currentUrl === '/' && e.url !== '/')
-			this.setState({ displayHeader: true });
-		else if (this.currentUrl !== '/' && e.url === '/')
-			this.setState({ displayHeader: false });
+		if(!this.header)
+			return;
 
-		this.currentUrl = e.url;
+		if (e.url === '/')
+			this.header.setState({ active: false });
+		else if (e.url !== '/')
+			this.header.setState({ active: true });
 	};
 
 	render() {
 
 		return (
 			<div id="app">
-				<Header />
+				<Header ref={h => this.header = h} />
 				<Router onChange={this.handleRoute}>
 					<Home path="/home" displayed={this.state.displayHeader} />
 					<Login path="/" />

@@ -44,7 +44,7 @@ export default class Login extends Component {
 
 		Backend.register(registerForm).then((r) => {
 			toast('Din bruger blev registreret');
-			route('/home');
+			this.setState({ action: 'login' });
 		}).catch(e => {
 			toast('Din bruger kunne ikke registreres', e, 'error');
 		});

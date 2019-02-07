@@ -24,6 +24,9 @@
 .shoppingListItem:last-child {
     border-bottom: 1px solid lightgray;
 }
+.shoppingListItem.delete {
+    animation: left-then-right 0.5s;
+}
 
 /*.shoppingListItem:hover .checkbox {
     color: var(--mdc-theme-primary);
@@ -75,6 +78,17 @@
     left: 8px;
 }
 
+.scrollable {
+    overflow-y: scroll;
+}
+
+.title {
+    margin-bottom: 0;
+}
+.description {
+    margin-bottom: 24px;
+}
+
 @media(min-width: 1024px) {
     .fabLowerRight {
         bottom: 1.5rem;
@@ -92,4 +106,10 @@
     .onlyMobile {
         display: none;
     }
+}
+
+@keyframes left-then-right {
+    0% { left: 0 }
+    30% { left: -10% }
+    100% { left: 120% }
 }

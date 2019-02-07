@@ -1,15 +1,23 @@
+import { route } from 'preact-router';
+
 export default class Backend {
 	static session = undefined;
 
 	static getSessionDetails () {
 		if (this.session) return this.session;
-		let s = localStorage.getItem('session');
+		let s = typeof window !== 'undefined' ? localStorage.getItem('session') : undefined;
 		if (s) {
 			let session = JSON.parse(s);
 			this.session = session;
 			return session;
 		}
 	}
+
+	static _clearSession = () => {
+		console.log('clearing session');
+		Backend.session = undefined;
+		localStorage.removeItem('session');
+	};
 
 	/**
 	 * Sends a request to the backend.
@@ -20,7 +28,7 @@ export default class Backend {
      * @returns {Promise<Response | never>}
      * @private
      */
-	static async _osteRequest(url, httpMethod, form = null, isJson = false) {
+	static _osteRequest = async (url, httpMethod, form = null, isJson = false) => {
 		let res = await fetch(url,
 			{
 				method: httpMethod,
@@ -39,10 +47,15 @@ export default class Backend {
 				parsedResponse = await res.text();
 			return parsedResponse;
 		}
-
-		let error = await res.text();
-		throw Error(error);
-	}
+		else if (res.status === 401) {
+			Backend._clearSession();
+			route('/', true);
+		}
+		else {
+			let error = await res.text();
+			throw Error(error);
+		}
+	};
 
 	/**
 	 * Logs into the webapp with the given username and password.
@@ -67,7 +80,7 @@ export default class Backend {
      */
 	static logout() {
 		return fetch('/api/logout', { method: 'POST' }).then(r => {
-			this.session = undefined;
+			this._clearSession();
 			return r;
 		});
 	}
@@ -131,5 +144,38 @@ export default class Backend {
 		formData.append('id', item.Id);
 
 		return this._osteRequest('/api/shopping', 'DELETE', formData);
+	}
+
+	/**
+	 * Get the items on the menu schedule.
+	 * @returns {Promise<Array|never>}
+	 */
+	static getMenuSchedule() {
+		return this._osteRequest('/api/cooking', 'GET', null, true);
+	}
+
+	/**
+	 * Adds an item to the shopping list.
+	 * @param shoppingListForm {FormData} - A form containing information about the new item.
+	 * @returns {Promise<Response|never>}
+	 */
+	static addMenuSchedule(shoppingListForm) {
+		return this._osteRequest('/api/cooking', 'POST', shoppingListForm, true);
+	}
+
+	/**
+	 * Update an item on the shopping list.
+	 * @param updateItemForm {FormData} - A form containing update information about the item.
+	 * @returns {Promise<Response|never>}
+	 */
+	static updateMenuSchedule(updateItemForm) {
+		return this._osteRequest('/api/cooking', 'PUT', updateItemForm, true);
+	}
+
+	static deleteMenuSchedule(item) {
+		let formData = new FormData();
+		formData.append('week', item.Week);
+
+		return this._osteRequest('/api/cooking', 'DELETE', formData);
 	}
 }

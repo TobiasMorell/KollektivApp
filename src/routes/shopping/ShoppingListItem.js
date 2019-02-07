@@ -61,7 +61,7 @@ export default class ShoppingListItem extends Component {
 		return /Mobi|Android/i.test(navigator.userAgent) ? undefined : this.toggleListItemTick;
 	};
 
-	render({ item, onEditItem, category, onDelete }) {
+	render({ item, onEditItem, category, onDelete, className }) {
 		let checkBoxIcon = checkboxIcons.unchecked;
 		this.onEditItem = onEditItem;
 		this.onDelete = onDelete;
@@ -71,7 +71,7 @@ export default class ShoppingListItem extends Component {
 			checkBoxIcon = checkboxIcons.checked;
 
 		return (
-			<List.Item class={style.shoppingListItem} onClick={this.clickHandler()} ontouchstart={this.startEditTimer}
+			<List.Item className={[style.shoppingListItem, className].join(' ')} onClick={this.clickHandler()} ontouchstart={this.startEditTimer}
 				ontouchmove={this.abortEditTimer()} ontouchend={this.abortEditTimer(true)}
 			>
 				<List.ItemGraphic>{this.state.listItemIcon}</List.ItemGraphic>

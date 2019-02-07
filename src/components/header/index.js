@@ -9,6 +9,9 @@ import style from './style.css';
 import toast from '../toast';
 
 export default class Header extends Component {
+	state = {
+		active: false
+	};
 	closeDrawer() {
 		this.drawer.MDComponent.open = false;
 	}
@@ -25,11 +28,11 @@ export default class Header extends Component {
 		this.closeDrawer();
 	};
 
-	componentDidMount = () => {
+	componentDidMount() {
 		if (!Backend.getSessionDetails()) {
 			route('/');
 		}
-	};
+	}
 
 	logout = () => {
 		this.toggleDropdown();
@@ -42,7 +45,6 @@ export default class Header extends Component {
 	};
 
 	goHome = this.linkTo('/');
-	goToMyProfile = this.linkTo('/profile');
 	goToShopping = this.linkTo('/shopping');
 	goToCooking = this.linkTo('/cooking');
 	goToKollexicon = this.linkTo('/kollexicon');
@@ -68,9 +70,9 @@ export default class Header extends Component {
 		</Drawer>);
 
 	render({ displayed }) {
-		let s = Backend.getSessionDetails();
-		if (displayed || !s)
+		if (!this.state.active)
 			return;
+		let s = Backend.getSessionDetails();
 
 		return (
 			<div>
@@ -83,13 +85,13 @@ export default class Header extends Component {
 						</Toolbar.Section>
 						<Toolbar.Section align-end shrink-to-fit onClick={this.openSettings}>
 							<div className={style.avatarContainer} onClick={this.toggleDropdown}>
-								<img className={style.avatar} src={s.avatar} />
+								<img className={style.avatar} src={s ? s.avatar : '/assets/avatars/profile.png'} />
 							</div>
 						</Toolbar.Section>
 					</Toolbar.Row>
 				</Toolbar>
 				<div className={[style.settingsDropdown, this.state.dropdownShown ? style.shown : ''].join(' ')}>
-					<div className={style.cropText}>{s.name}</div>
+					<div className={style.cropText}>{s ? s.name : 'Dit navn'}</div>
 					<div className={style.clickable} onClick={this.logout}>Logout</div>
 				</div>
 				<this.OsteDrawer />

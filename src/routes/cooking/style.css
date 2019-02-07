@@ -13,3 +13,136 @@
 .actionIcon.dislike {
     color: red;
 }
+
+.pb-0 {
+    padding-bottom: 0;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.delete {
+    -webkit-animation: shrink 0.5s;
+    -o-animation: shrink 0.5s;
+    animation: shrink 0.5s;
+    overflow: hidden;
+}
+
+.fabLowerRight {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.listEndCenter {
+    right: 5%;
+    position: absolute;
+}
+
+.shoppingListItem {
+    background-color: white;
+    border-top: 1px solid lightgray;
+}
+.shoppingListItem:last-child {
+    border-bottom: 1px solid lightgray;
+}
+
+/*.shoppingListItem:hover .checkbox {
+    color: var(--mdc-theme-primary);
+}*/
+
+.revertMargin {
+    margin: 0 -16px;
+}
+
+.primaryOnHover:hover {
+    cursor: pointer;
+    color: var(--mdc-theme-primary);
+}
+
+.mdc-theme--dark .shoppingListItem {
+    color: white;
+    background-color: #4e4e4e;
+}
+
+.wideInputField {
+    width: 95%;
+}
+
+.addCategoryIcon {
+    font-size: 3.5em;
+}
+
+.addCategoryIcon:hover {
+    cursor: pointer;
+    color: var(--mdc-theme-primary);
+}
+
+.centerChildren > * {
+    margin: 10px auto;
+    text-align: center;
+    display: block;
+}
+
+.onlyDesktop {
+    display: none;
+}
+
+.onlyMobile {
+    display: inherit;
+}
+
+.left {
+    position: absolute;
+    left: 8px;
+}
+
+.cardBody {
+    padding-top: 8px;
+}
+
+.menuDetails span:first-child {
+    width: 15%;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+.scollable {
+    overflow-y: scroll;
+    margin-top: 8px;
+}
+
+@media(min-width: 1024px) {
+    .fabLowerRight {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+
+    .wideInputField {
+        width: 80%;
+    }
+
+    .onlyDesktop {
+        display: inline-block;
+    }
+
+    .onlyMobile {
+        display: none;
+    }
+
+    .cardHeader {
+        padding: 16px;
+    }
+
+    .cardBody {
+        padding: 16px;
+    }
+}
+
+@keyframes shrink {
+    100% {
+        max-width: 0;
+        max-height: 0;
+    }
+}
