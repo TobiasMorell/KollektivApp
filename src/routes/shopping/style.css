@@ -60,9 +60,9 @@
 }
 
 .centerChildren > * {
-    margin: 10px auto;
+    margin: 4px auto;
     text-align: center;
-    display: block;
+    display: block !important;
 }
 
 .onlyDesktop {
@@ -87,6 +87,11 @@
 }
 .description {
     margin-bottom: 24px;
+}
+
+.alignIconCenter {
+    vertical-align: top;
+    line-height: 23px;
 }
 
 @media(min-width: 1024px) {

@@ -1,16 +1,12 @@
 import { h, Component } from 'preact';
 import TextField from 'preact-material-components/TextField';
-import 'preact-material-components/TextField/style.css';
-import 'preact-material-components/Button/style.css';
 import Fab from 'preact-material-components/Fab';
-import 'preact-material-components/Fab/style.css';
 import List from 'preact-material-components/List';
-import 'preact-material-components/List/style.css';
 import style from './style.css';
 import ShoppingListItem from './ShoppingListItem';
 import Backend from '../../Backend';
 import Dialog from 'preact-material-components/Dialog';
-import 'preact-material-components/Dialog/style.css';
+import Icon from 'preact-material-components/Icon';
 import AutoCompleter from 'preact-material-autocompleter';
 import linkState from 'linkstate';
 import toast from '../../components/toast';
@@ -126,7 +122,6 @@ export default class Shopping extends Component {
 		for (const ware of wares) {
 			if (ware === this.state.upForDeletion) {
 				let item =  <ShoppingListItem item={ware} className={style.delete} />;
-				console.log(item);
 				setTimeout(() => {
 					this.setState({ items: this.state.items.filter(i => i.Id !== ware.Id), upForDeletion: undefined });
 				}, 510);
@@ -146,17 +141,30 @@ export default class Shopping extends Component {
 		this.addItemDlg.MDComponent.close();
 	};
 
+	focusElement = e => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			this.autoCompleter.focus();
+		}
+	};
+
 	render() {
 		return (
 			<div className={['appContainer', style.scrollable].join(' ')}>
 				<h2 className={style.title}>Indkøbsliste</h2>
-				<div className={['mdc-typography--caption', style.description].join(' ')}>Marker de varer vi mangler af.</div>
+				<div className={['mdc-typography--caption', style.description].join(' ')}>
+					<div><Icon>check_box_outline_blank</Icon><span className={style.alignIconCenter}>: Varen er ikke tilføjet til listen.</span></div>
+					<div><Icon>check_box</Icon><span className={style.alignIconCenter}>: Varen er tilføjet til listen.</span></div>
+				</div>
 				{this.createShoppingList()}
 
 				<Dialog onAccept={this.confirmItemDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
 					<Dialog.Header>{this.state.addNewItem ? 'Tilføj til indkøbslisten' : 'Rediger indkøbslistepunkt'}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
-						<TextField className={style.wideInputField} id={this.state.itemNameId} onInput={linkState(this, 'newName')} value={this.state.newName} label="Navn" required />
+						<TextField className={style.wideInputField} id={this.state.itemNameId}
+							onInput={linkState(this, 'newName')} value={this.state.newName} label="Navn"
+							onkeydown={this.focusElement} required
+						/>
 						<AutoCompleter ref={ac => this.autoCompleter = ac} className={style.wideInputField} hintText="Vælg en kategori" allowAddNewItems
 							items={this.state.items ? this.state.items.map(i => i.Category).filter((v,i,a) => a.indexOf(v) === i) : []}
 						/>

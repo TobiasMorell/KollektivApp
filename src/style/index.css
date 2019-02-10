@@ -55,7 +55,6 @@ html, body {
     bottom: 0;
     left: 0;
     right: 0;
-    overflow: hidden;
 }
 
 .mdc-card {
@@ -113,5 +112,9 @@ html, body {
     .mdc-card {
         margin: 16px auto;
         max-width: 60%
+    }
+
+    #app {
+        overflow: hidden;
     }
 }

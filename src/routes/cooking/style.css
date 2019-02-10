@@ -103,7 +103,7 @@
 }
 
 .menuDetails span:first-child {
-    width: 15%;
+    width: 40%;
     display: inline-block;
     margin-bottom: 4px;
 }
@@ -137,6 +137,10 @@
 
     .cardBody {
         padding: 16px;
+    }
+
+    .menuDetails span:first-child {
+        width: 15%;
     }
 }
 

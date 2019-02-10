@@ -10,7 +10,7 @@ import linkState from 'linkstate';
 import Fab from 'preact-material-components/Fab';
 import toast from '../../components/toast';
 import CookingCard from './CookingCard';
-import ShoppingListItem from "../shopping/ShoppingListItem";
+import ShoppingListItem from '../shopping/ShoppingListItem';
 
 export default class Cooking extends Component {
 	state = {
@@ -18,13 +18,8 @@ export default class Cooking extends Component {
 	};
 	domIds = {
 		dialogNameId: 'menu-dialog-name',
-		dialogMealId: 'menu-dialog-meal'
-	};
-	like = (e) => {
-		e.target.classList.add(style.like);
-	};
-	dislike = (e) => {
-		e.target.classList.add(style.dislike);
+		dialogMealId: 'menu-dialog-meal',
+		dialogWeek: 'menu-dialog-week'
 	};
 
 	componentWillMount() {
@@ -36,7 +31,6 @@ export default class Cooking extends Component {
 	}
 
 	openEditMenu = (menu) => (e) => {
-		console.log(e);
 		this.setState({
 			addNewItem: false,
 			newChef: menu.Chef,
@@ -63,7 +57,7 @@ export default class Cooking extends Component {
 
 	clearItemDialog = () => {
 		this.setState({
-			addNewItem: false,
+			addNewItem: undefined,
 			newMeal: '',
 			newChef: '',
 			newWeek: ''
@@ -98,29 +92,49 @@ export default class Cooking extends Component {
 		}
 	};
 
-	render() {
-		console.log(style.delete);
+	focusOnEnter = id => e => {
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			document.getElementById(id).focus();
+		}
+	};
 
+	submitOnEnter = e => {
+		if (e.key === 'Enter') {
+			this.confirmMenuDialog(e);
+			this.addItemDlg.MDComponent.close();
+		}
+	};
+
+	render() {
 		return (
 			<div className={['appContainer', style.scollable].join(' ')}>
 				{this.state.schedule.map(m => {
 					if (m === this.state.upForDeletion){
-						console.log('delete');
 						let item =  <CookingCard className={style.delete} menu={m} />;
 						setTimeout(() => {
 							this.setState({ schedule: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
 						}, 510);
 						return item;
 					}
-					return <CookingCard menu={m} openEditMenu={this.openEditMenu(m)} deleteItem={this.deleteItem(m)} />
+					return <CookingCard menu={m} openEditMenu={this.openEditMenu(m)} deleteItem={this.deleteItem(m)} />;
 				})}
 
 				<Dialog onAccept={this.confirmMenuDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
 					<Dialog.Header>{this.state.addNewItem ? 'Tilføj en madplan' : 'Rediger en madplan'}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
-						<TextField className={style.wideInputField} id={this.domIds.dialogNameId} onInput={linkState(this, 'newChef')} value={this.state.newChef} label="Lavet af" required />
-						<TextField className={style.wideInputField} id={this.domIds.dialogMealId} onInput={linkState(this, 'newMeal')} value={this.state.newMeal} label="Ret" required />
-						<TextField className={style.wideInputField} type="number" onInput={linkState(this, 'newWeek')} value={this.state.newWeek} label="Uge Nummer" required />
+						<TextField className={style.wideInputField} id={this.domIds.dialogNameId}
+							onInput={linkState(this, 'newChef')} value={this.state.newChef} label="Lavet af"
+							onkeydown={this.focusOnEnter(this.domIds.dialogMealId)} required
+						/>
+						<TextField className={style.wideInputField} id={this.domIds.dialogMealId}
+							onInput={linkState(this, 'newMeal')} value={this.state.newMeal} label="Ret"
+							onkeydown={this.focusOnEnter(this.domIds.dialogWeek)} required
+						/>
+						<TextField className={style.wideInputField} type="number" id={this.domIds.dialogWeek}
+							onInput={linkState(this, 'newWeek')} value={this.state.newWeek} label="Uge Nummer"
+							onkeydown={this.submitOnEnter} required
+						/>
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton cancel >Annuller</Dialog.FooterButton>
