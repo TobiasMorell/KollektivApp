@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 using Red;
 using LiteDB;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Peachpie.AspNetCore.Web;
+using PeachPied.WordPress.AspNetCore;
 using Red.CookieSessions;
 
 namespace OsteklokkenServer
@@ -28,6 +34,21 @@ namespace OsteklokkenServer
                 {
                     Secure = false
                 }));
+
+            server.ConfigureApplication = a =>
+            {
+                a.UseForwardedHeaders(new ForwardedHeadersOptions()
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
+            };
+            /*server.ConfigureServices = s =>
+            {
+                s.Configure<ForwardedHeadersOptions>(o =>
+                {
+                    o.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
+                });
+            };*/
             
             async Task Auth(Request req, Response res)
             {
