@@ -123,11 +123,21 @@ namespace OsteklokkenServer
                 string password = form["password"];
                 string registrant = form["registrant"];
 
-                var allowedRegistrants = await File.ReadAllLinesAsync("./AllowedUsers.txt");
-
-                if (!allowedRegistrants.Contains(registrant))
+                try
                 {
-                    await res.SendString("Sorry, you are not allowed to register here. Talk to Tobias if this is wrong", status: HttpStatusCode.BadRequest);
+                    var allowedRegistrants = await File.ReadAllLinesAsync("./AllowedUsers.txt");
+
+                    if (!allowedRegistrants.Contains(registrant))
+                    {
+                        await res.SendString(
+                            "Sorry, you are not allowed to register here. Talk to Tobias if this is wrong",
+                            status: HttpStatusCode.BadRequest);
+                        return;
+                    }
+                }
+                catch (Exception e)
+                {
+                    await res.SendString(e.ToString(), status: HttpStatusCode.InternalServerError);
                     return;
                 }
 
