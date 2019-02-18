@@ -55,6 +55,10 @@ namespace OsteklokkenServer
                 if (req.GetSession<OsteSession>() == null)
                     await res.SendStatus(HttpStatusCode.Unauthorized);
             }
+
+	    server.Get("/api/ping", async (req, res) => {
+	    	await res.SendString("pong");
+	    });
             
             server.Post("/api/login", async (req, res) =>
             {
