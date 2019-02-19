@@ -25,7 +25,7 @@ export default class App extends Component {
 		if(!this.header)
 			return;
 
-		if (e.url === '/')
+		if (e.url === '/login')
 			this.header.setState({ active: false });
 		else if (e.url !== '/')
 			this.header.setState({ active: true });
@@ -37,8 +37,8 @@ export default class App extends Component {
 			<div id="app">
 				<Header ref={h => this.header = h} />
 				<Router onChange={this.handleRoute}>
-					<Home path="/home" displayed={this.state.displayHeader} />
-					<Login path="/" />
+					<Home path="/home" />
+					<Login path="/login" />
 					<AsyncRoute
 						path="/shopping"
 						getComponent={() => import('../routes/shopping').then(m => m.default)}

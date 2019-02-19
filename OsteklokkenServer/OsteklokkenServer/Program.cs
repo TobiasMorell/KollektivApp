@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Peachpie.AspNetCore.Web;
-using PeachPied.WordPress.AspNetCore;
 using Red.CookieSessions;
 
 namespace OsteklokkenServer
@@ -72,13 +70,13 @@ namespace OsteklokkenServer
                 var user = users.FindOne(u => u.Username == username);
                 if (user == null)
                 {
-                    await res.SendString("Invalid username or password", status: HttpStatusCode.Unauthorized);
+                    await res.SendString("Invalid username or password", status: HttpStatusCode.BadRequest);
                     return;
                 }
                 
                 if (BCrypt.Net.BCrypt.Verify(password, user.Password))
                 {
-                    req.OpenSession(new OsteSession
+                    await req.OpenSession(new OsteSession
                     {
                         Username = user.Username,
                         Name = user.Name
@@ -90,7 +88,7 @@ namespace OsteklokkenServer
                 }
                 else
                 {
-                    await res.SendString("Invalid username or password", status: HttpStatusCode.Unauthorized);
+                    await res.SendString("Invalid username or password", status: HttpStatusCode.BadRequest);
                 }
             });
             

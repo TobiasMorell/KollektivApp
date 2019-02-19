@@ -3,6 +3,7 @@ import Card from 'preact-material-components/Card';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
 import style from './style.css';
+import Logo from '../../assets/osteklokken-logo.png';
 
 export default class Home extends Component {
 	render() {
@@ -14,7 +15,7 @@ export default class Home extends Component {
 					</div>
 					<Card.Media>
 						<div>
-							<img class={style.cardMedia} src="/assets/osteklokken-logo.png" />
+							<img class={style.cardMedia} src={Logo} />
 						</div>
 					</Card.Media>
 					<div class={style.cardBody}>

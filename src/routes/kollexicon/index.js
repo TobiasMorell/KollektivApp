@@ -6,6 +6,7 @@ import linkState from 'linkstate';
 import Card from 'preact-material-components/Card';
 import 'preact-material-components/Card/style.css';
 import KollexiconRule from './KollexiconRule';
+import toast from '../../components/toast';
 
 export default class Shopping extends Component {
 	state = {
@@ -13,7 +14,11 @@ export default class Shopping extends Component {
 		ruleSearch: ''
 	};
 	componentWillMount() {
-		fetch('/assets/rules.json').then(r => r.json().then(j => this.setState({ rules: j })));
+		fetch('/beboere/assets/rules.json')
+			.then(r => r.json().then(j => this.setState({ rules: j })))
+			.catch(e => {
+				toast('Reglerne kunne ikke hentes', e, 'error');
+			});
 	}
 
 	_ruleList = () => {

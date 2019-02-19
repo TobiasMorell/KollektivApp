@@ -38,6 +38,7 @@ export default class Backend {
 				credentials: 'include',
 				body: form
 			});
+		console.log(res);
 
 		if (res.ok) {
 			let parsedResponse;
@@ -63,14 +64,15 @@ export default class Backend {
 	 * @returns {Promise} - A promise that is either accepted or rejected depending on the response from the server.
 	 */
 	static async login(loginForm) {
-		let s = await this._osteRequest('/api/login', 'POST', loginForm);
-		if (s) {
-			let session = JSON.parse(s);
-			this.session = session;
-			localStorage.setItem('session', s);
-			return session;
-		}
-		throw new Error(s ? s : 'Could not log in');
+		return this._osteRequest('/api/login', 'POST', loginForm).then(s => {
+			if (s) {
+				let session = JSON.parse(s);
+				this.session = session;
+				localStorage.setItem('session', s);
+				return session;
+			}
+			throw new Error(s ? s : 'Could not log in');
+		});
 	}
 
 

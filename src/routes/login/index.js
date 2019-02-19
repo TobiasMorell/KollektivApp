@@ -9,6 +9,7 @@ import style from './style.css';
 import Button from 'preact-material-components/Button';
 import Backend from '../../Backend';
 import toast from '../../components/toast';
+import Logo from '../../assets/logo.jpg';
 
 export default class Login extends Component {
 
@@ -149,7 +150,7 @@ export default class Login extends Component {
 					{cardDescription}
 					<div class="card-media">
 						<div className={style.logoBox}>
-							<img src="/assets/osteklokken-logo.png" />
+							<img src={Logo} />
 						</div>
 						{form}
 					</div>

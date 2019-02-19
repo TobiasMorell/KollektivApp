@@ -7,10 +7,12 @@ import Backend from '../../Backend';
 import 'preact-material-components/style.css';
 import style from './style.css';
 import toast from '../toast';
+import DefaultAvatar from '../../assets/avatars/profile.png';
 
 export default class Header extends Component {
 	state = {
-		active: false
+		active: false,
+		avatar: DefaultAvatar
 	};
 	closeDrawer() {
 		this.drawer.MDComponent.open = false;
@@ -29,8 +31,13 @@ export default class Header extends Component {
 	};
 
 	componentDidMount() {
-		if (!Backend.getSessionDetails()) {
-			route('/');
+		let s = Backend.getSessionDetails();
+		if (!s) {
+			route('/login');
+		}
+		else {
+			let i = require(s.avatar);
+			this.state.avatar = i;
 		}
 	}
 
@@ -38,13 +45,13 @@ export default class Header extends Component {
 		this.toggleDropdown();
 		Backend.logout().then(r => {
 			localStorage.removeItem('session');
-			route('/');
+			route('/login');
 		}).catch(e => {
 			toast('Kunne ikke logge ud', e, 'error');
 		});
 	};
 
-	goHome = this.linkTo('/');
+	goHome = this.linkTo('/home');
 	goToShopping = this.linkTo('/shopping');
 	goToCooking = this.linkTo('/cooking');
 	goToKollexicon = this.linkTo('/kollexicon');
@@ -62,7 +69,7 @@ export default class Header extends Component {
 	OsteDrawer = ({ }) => (
 		<Drawer modal ref={this.drawerRef}>
 			<Drawer.DrawerContent>
-				<this.DrawerItem onSelected={this.goHome} icon="home" text="Nyheder" selected={true} />
+				<this.DrawerItem onSelected={this.goHome} icon="home" text="Nyheder" selected />
 				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste"  />
 				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning"  />
 				<this.DrawerItem onSelected={this.goToKollexicon} icon="gavel" text="Kolleksikon"  />
@@ -73,6 +80,7 @@ export default class Header extends Component {
 		if (!this.state.active)
 			return;
 		let s = Backend.getSessionDetails();
+
 
 		return (
 			<div>
@@ -85,7 +93,7 @@ export default class Header extends Component {
 						</Toolbar.Section>
 						<Toolbar.Section align-end shrink-to-fit onClick={this.openSettings}>
 							<div className={style.avatarContainer} onClick={this.toggleDropdown}>
-								<img className={style.avatar} src={s ? s.avatar : '/assets/avatars/profile.png'} />
+								<img className={style.avatar} src={s ? s.avatar : './assets/avatars/profile.png'} />
 							</div>
 						</Toolbar.Section>
 					</Toolbar.Row>
