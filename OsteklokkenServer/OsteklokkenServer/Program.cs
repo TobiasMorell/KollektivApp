@@ -87,7 +87,7 @@ namespace OsteklokkenServer
                     });
                     await res.SendJson(new {
                         name = user.Name,
-                        avatar = $"/assets/avatars/{user.Name.Split()[0].ToLower()}.png"
+                        avatar = $"/osteklokken/assets/avatars/{user.Name.Split()[0].ToLower()}.png"
                     });
                 }
                 else
