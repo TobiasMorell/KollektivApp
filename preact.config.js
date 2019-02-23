@@ -16,7 +16,8 @@ export default (config, env, helpers) => {
 		proxy: [
 			{
 				path: '/api/**',
-				target: 'http://localhost:5000'
+				target: 'http://localhost:5000/',
+				pathRewrite: { '^/osteklokken': '' }
 			}
 		]
 	};

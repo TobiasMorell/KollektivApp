@@ -23,9 +23,9 @@
 }
 
 .delete {
-    -webkit-animation: shrink 0.5s;
-    -o-animation: shrink 0.5s;
-    animation: shrink 0.5s;
+    -webkit-animation: shrink 0.8s;
+    -o-animation: shrink 0.8s;
+    animation: shrink 0.8s;
     overflow: hidden;
 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using Red.CookieSessions;
 
 namespace OsteklokkenServer
@@ -26,6 +28,7 @@ namespace OsteklokkenServer
             var users = db.GetCollection<User>("users");
             var shoppingItems = db.GetCollection<ShoppingItem>("shoppingItems");
             var cookingSchedule = db.GetCollection<Cooking>("cooking");
+            var rules = db.GetCollection<KollexiconRule>("kollexicon");
             
             server.Use(new CookieSessions<OsteSession>(
                 new CookieSessionSettings(TimeSpan.FromDays(14))
@@ -58,6 +61,7 @@ namespace OsteklokkenServer
                 await res.SendString("pong");
             });
             
+            #region Users
             server.Post("/api/login", async (req, res) =>
             {
                 var form = await req.GetFormDataAsync();
@@ -202,10 +206,11 @@ namespace OsteklokkenServer
                 else
                 {
                     await res.SendString("Dit brugernavn og rigtige navn passer ikke på en bruger", status: HttpStatusCode.BadRequest);
-                }
-                
+                } 
             });
+            #endregion
             
+            #region Shopping
             server.Get("/api/shopping", Auth, async (req, res) =>
             {
                 var items = shoppingItems.FindAll();
@@ -274,7 +279,9 @@ namespace OsteklokkenServer
                 shoppingItems.Delete(form["id"].ToString());
                 await res.SendStatus(HttpStatusCode.OK);
             });
-            
+            #endregion
+
+            #region Cooking
             server.Get("/api/cooking", Auth, async (req, res) =>
             {
                 var c = cookingSchedule.FindAll();
@@ -362,6 +369,82 @@ namespace OsteklokkenServer
                 cookingSchedule.Delete(m.Week);
                 await res.SendStatus(HttpStatusCode.OK);
             });
+            #endregion
+
+            #region Kollexicon
+
+            server.Get("/api/kollexicon", async (request, response) =>
+            {
+                var r = rules.FindAll().OrderBy(x => x.Title);
+                await response.SendJson(r);
+            });
+            
+            server.Post("/api/kollexicon", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("title") || !form.ContainsKey("description"))
+                {
+                    await res.SendString("'title' or 'description' missing.", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                if (rules.FindOne(r => r.Title == form["title"]) != null)
+                {
+                    await res.SendString("Der findes allerede en regl med det navn", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                var rule = new KollexiconRule { Title = form["title"], Description = form["description"] };
+                rules.Insert(rule);
+
+                await res.SendJson(rule);
+            });
+
+            server.Put("/api/kollexicon", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("title") || !form.ContainsKey("description") || !form.ContainsKey("id"))
+                {
+                    await res.SendString("'id', 'title' or 'description' missing.", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                string id = form["id"];
+                var rule = rules.FindOne(r => r.Id.Equals(id));
+                if (rule == null)
+                {
+                    await res.SendString("No rule for the given id", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                rule.Title = form["title"];
+                rule.Description = form["description"];
+                
+                rules.Update(rule);
+                await res.SendJson(rule);
+            });
+            
+            server.Delete("/api/kollexicon", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("id"))
+                {
+                    await res.SendString("'id' is missing", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                string id = form["id"];
+                var m = rules.FindOne(r => r.Id.Equals(id));
+                if (m == null)
+                {
+                    await res.SendString("No rule for the given id", status: HttpStatusCode.NotFound);
+                    return;
+                }
+
+                rules.Delete(m.Id);
+                await res.SendStatus(HttpStatusCode.OK);
+            });
+            #endregion
 
             server.Start();
             Console.ReadLine();

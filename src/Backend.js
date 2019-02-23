@@ -38,7 +38,6 @@ export default class Backend {
 				credentials: 'include',
 				body: form
 			});
-		console.log(res);
 
 		if (res.ok) {
 			let parsedResponse;
@@ -179,5 +178,38 @@ export default class Backend {
 		formData.append('week', item.Week);
 
 		return this._osteRequest('/api/cooking', 'DELETE', formData);
+	}
+
+	/**
+	 * Get the items on the menu schedule.
+	 * @returns {Promise<Array|never>}
+	 */
+	static getKollexicon() {
+		return this._osteRequest('/api/kollexicon', 'GET', null, true);
+	}
+
+	/**
+	 * Adds an item to the shopping list.
+	 * @param ruleForm {FormData} - A form containing information about the new rule.
+	 * @returns {Promise<Response|never>}
+	 */
+	static addKollexiconRule(ruleForm) {
+		return this._osteRequest('/api/kollexicon', 'POST', ruleForm, true);
+	}
+
+	/**
+	 * Update an item on the shopping list.
+	 * @param updateRuleForm {FormData} - A form containing update information about the rule.
+	 * @returns {Promise<Response|never>}
+	 */
+	static updateKollexiconRule(updateRuleForm) {
+		return this._osteRequest('/api/kollexicon', 'PUT', updateRuleForm, true);
+	}
+
+	static deleteKollexiconRule(rule) {
+		let formData = new FormData();
+		formData.append('id', rule.Id);
+
+		return this._osteRequest('/api/kollexicon', 'DELETE', formData);
 	}
 }

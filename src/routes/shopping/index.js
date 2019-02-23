@@ -124,7 +124,7 @@ export default class Shopping extends Component {
 				let item =  <ShoppingListItem item={ware} className={style.delete} />;
 				setTimeout(() => {
 					this.setState({ items: this.state.items.filter(i => i.Id !== ware.Id), upForDeletion: undefined });
-				}, 510);
+				}, 810);
 				wareList.push(item);
 			}
 			else

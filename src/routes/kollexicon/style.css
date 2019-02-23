@@ -97,12 +97,74 @@ i.expandAnimation {
     max-width: 300px;
 }
 
+.centerChildren > * {
+    margin: 10px auto;
+    text-align: center;
+    display: block;
+}
+
+.wideInputField {
+    width: 95%;
+    text-align: left;
+}
+
+.left {
+    position: absolute;
+    left: 8px;
+}
+
+.fabLowerRight {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.actionBar {
+    padding-top: 4px;
+    border-top: 1px solid rgba(1,1,1,0.2);
+}
+
+.actionBar > button {
+    float: right;
+}
+
+.delete {
+    -webkit-animation: shrink 0.8s;
+    -o-animation: shrink 0.8s;
+    animation: shrink 0.8s;
+    overflow: hidden;
+}
+
 @media (min-width: 1024px) {
+    .fabLowerRight {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+
     .cardHeader {
         padding: 16px;
     }
 
     .cardBody {
         padding: 16px;
+    }
+
+    .wideInputField {
+        width: 80%;
+    }
+
+    .ruleDescriptionArea {
+        height: 400px;
+    }
+    .ruleDescriptionArea textarea {
+        height: 400px !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+}
+
+@keyframes shrink {
+    100% {
+        max-height: 0;
     }
 }
