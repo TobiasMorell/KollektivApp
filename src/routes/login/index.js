@@ -24,7 +24,7 @@ export default class Login extends Component {
 
 	componentWillMount() {
 		if (Backend.getSessionDetails()) {
-			route('/home');
+			route('/osteklokken/home', true);
 		}
 	}
 
@@ -35,7 +35,7 @@ export default class Login extends Component {
 
 		Backend.login(loginForm).then((r) => {
 			e.srcElement.reset();
-			route('/home');
+			route('/osteklokken/home', true);
 		}).catch(e => {
 			toast('Login mislykkedes', e, 'error');
 		});

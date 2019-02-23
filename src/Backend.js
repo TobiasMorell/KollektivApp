@@ -50,7 +50,7 @@ export default class Backend {
 		}
 		else if (res.status === 401) {
 			Backend._clearSession();
-			route('/', true);
+			route('/osteklokken/login', true);
 		}
 		else {
 			let error = await res.text();

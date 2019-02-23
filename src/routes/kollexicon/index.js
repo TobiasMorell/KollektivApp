@@ -14,8 +14,11 @@ export default class Shopping extends Component {
 		ruleSearch: ''
 	};
 	componentWillMount() {
-		fetch('/beboere/assets/rules.json')
-			.then(r => r.json().then(j => this.setState({ rules: j })))
+		fetch('/osteklokken/assets/rules.json')
+			.then(r => {
+				console.log(r);
+				return r.json().then(j => this.setState({ rules: j }));
+			})
 			.catch(e => {
 				toast('Reglerne kunne ikke hentes', e, 'error');
 			});

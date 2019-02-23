@@ -1,5 +1,5 @@
 import { h, Component } from 'preact';
-import { Router } from 'preact-router';
+import { route, Router } from 'preact-router';
 
 import Header from './header';
 import Home from '../routes/home';
@@ -22,12 +22,14 @@ export default class App extends Component {
 	 *	@param {string} event.url	The newly routed URL
 	 */
 	handleRoute = e => {
-		if(!this.header)
+		if (e.url === '/osteklokken/')
+			route('/osteklokken/login', true);
+		if (!this.header)
 			return;
 
-		if (e.url === '/login')
+		if (e.url === '/osteklokken/login')
 			this.header.setState({ active: false });
-		else if (e.url !== '/')
+		else if (e.url !== '/osteklokken/')
 			this.header.setState({ active: true });
 	};
 
@@ -36,19 +38,19 @@ export default class App extends Component {
 		return (
 			<div id="app">
 				<Header ref={h => this.header = h} />
-				<Router onChange={this.handleRoute}>
-					<Home path="/home" />
-					<Login path="/login" />
+				<Router onChange={this.handleRoute} basename >
+					<Home path="/osteklokken/home" />
+					<Login path="/osteklokken/login" />
 					<AsyncRoute
-						path="/shopping"
+						path="/osteklokken/shopping"
 						getComponent={() => import('../routes/shopping').then(m => m.default)}
 					/>
 					<AsyncRoute
-						path="/cooking"
+						path="/osteklokken/cooking"
 						getComponent={() => import('../routes/cooking').then(m => m.default)}
 					/>
 					<AsyncRoute
-						path="/kollexicon"
+						path="/osteklokken/kollexicon"
 						getComponent={() => import('../routes/kollexicon').then(m => m.default)}
 					/>
 					<NotFound default />

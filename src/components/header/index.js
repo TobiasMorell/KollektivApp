@@ -26,18 +26,14 @@ export default class Header extends Component {
 	linkTo = path => () => {
 		this.currentTab = path.replace('/', '');
 
-		route(path);
+		route('/osteklokken' + path);
 		this.closeDrawer();
 	};
 
 	componentDidMount() {
 		let s = Backend.getSessionDetails();
 		if (!s) {
-			route('/login');
-		}
-		else {
-			let i = require(s.avatar);
-			this.state.avatar = i;
+			route('/osteklokken/login');
 		}
 	}
 
@@ -45,7 +41,7 @@ export default class Header extends Component {
 		this.toggleDropdown();
 		Backend.logout().then(r => {
 			localStorage.removeItem('session');
-			route('/login');
+			route('/osteklokken/login');
 		}).catch(e => {
 			toast('Kunne ikke logge ud', e, 'error');
 		});
@@ -91,9 +87,9 @@ export default class Header extends Component {
 								menu
 							</Toolbar.Icon>
 						</Toolbar.Section>
-						<Toolbar.Section align-end shrink-to-fit onClick={this.openSettings}>
+						<Toolbar.Section align-end shrink-to-fit >
 							<div className={style.avatarContainer} onClick={this.toggleDropdown}>
-								<img className={style.avatar} src={s ? s.avatar : './assets/avatars/profile.png'} />
+								<img className={style.avatar} src={s ? s.avatar : '/osteklokken/assets/avatars/profile.png'} />
 							</div>
 						</Toolbar.Section>
 					</Toolbar.Row>
