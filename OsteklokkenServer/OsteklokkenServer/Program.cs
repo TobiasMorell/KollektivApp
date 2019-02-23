@@ -54,9 +54,9 @@ namespace OsteklokkenServer
                     await res.SendStatus(HttpStatusCode.Unauthorized);
             }
 
-	    server.Get("/api/ping", async (req, res) => {
-	    	await res.SendString("pong");
-	    });
+            server.Get("/api/ping", async (req, res) => {
+                await res.SendString("pong");
+            });
             
             server.Post("/api/login", async (req, res) =>
             {
@@ -71,10 +71,10 @@ namespace OsteklokkenServer
                 string username = form["username"];
                 string password = form["password"];
                 
-                var user = users.FindOne(u => u.Username == username);
+                var user = users.FindOne(u => username.ToLower() == u.Username.ToLower());
                 if (user == null)
                 {
-                    await res.SendString("Invalid username or password", status: HttpStatusCode.BadRequest);
+                    await res.SendString("Brugernavn eller kodeord er ikke korrekt", status: HttpStatusCode.BadRequest);
                     return;
                 }
                 
@@ -92,7 +92,7 @@ namespace OsteklokkenServer
                 }
                 else
                 {
-                    await res.SendString("Invalid username or password", status: HttpStatusCode.BadRequest);
+                    await res.SendString("Brugernavn eller kodeord er ikke korrekt", status: HttpStatusCode.BadRequest);
                 }
             });
             
@@ -107,7 +107,7 @@ namespace OsteklokkenServer
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    await res.SendString("Logout not yet supported", status: HttpStatusCode.InternalServerError);
+                    await res.SendString("Man kan ikke logge ud endnu :(", status: HttpStatusCode.InternalServerError);
                 }
             });
             
@@ -132,7 +132,7 @@ namespace OsteklokkenServer
                     if (!allowedRegistrants.Contains(registrant))
                     {
                         await res.SendString(
-                            "Sorry, you are not allowed to register here. Talk to Tobias if this is wrong",
+                            "Du står ikke på listen af nuværende beboere. Tal med Tobias hvis det er en fejl",
                             status: HttpStatusCode.BadRequest);
                         return;
                     }
@@ -143,17 +143,17 @@ namespace OsteklokkenServer
                     return;
                 }
 
-                var userWithSameUsername = users.FindOne(u => u.Username == username);
+                var userWithSameUsername = users.FindOne(u => u.Username.ToLower() == username.ToLower());
                 if (userWithSameUsername != null)
                 {
-                    await res.SendString("Username is already taken", status: HttpStatusCode.BadRequest);
+                    await res.SendString("Brugernavnet er optaget", status: HttpStatusCode.BadRequest);
                     return;
                 }
 
                 var user = new User()
                 {
                     Id = User.NewId(),
-                    Username = username,
+                    Username = username.ToLower(),
                     Password = BCrypt.Net.BCrypt.HashPassword(password),
                     Name = registrant
                 };
@@ -188,7 +188,7 @@ namespace OsteklokkenServer
 
                 if (newPassword1 != newPassword2)
                 {
-                    await res.SendString("The two passwords provided does not match. Please repeat the new password properly", status: HttpStatusCode.BadRequest);
+                    await res.SendString("De to kodeord er ikke ens", status: HttpStatusCode.BadRequest);
                     return;
                 }
                 
@@ -197,11 +197,11 @@ namespace OsteklokkenServer
                 {
                     user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword1);
                     users.Update(user);
-                    await res.SendString("Your password has been changed!");
+                    await res.SendString("Dit kodeord er opdateret!");
                 }
                 else
                 {
-                    await res.SendString("Sorry, the username or registrant name (or the combination of the two) are invalid", status: HttpStatusCode.BadRequest);
+                    await res.SendString("Dit brugernavn og rigtige navn passer ikke på en bruger", status: HttpStatusCode.BadRequest);
                 }
                 
             });
