@@ -11,3 +11,11 @@
 .cardBody {
   padding: 16px;
 }
+
+.goHomeButtonContainer {
+	text-align: center;
+}
+
+.goHomeButton {
+	color: white !important;
+}

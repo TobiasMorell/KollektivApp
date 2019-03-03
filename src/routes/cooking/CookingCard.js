@@ -13,6 +13,10 @@ export default class CookingCard extends Component {
 				</div>
 				<div className={style.cardBody}>
 					<div className={style.menuDetails}>
+						<span>Ugedag:</span>
+						<span>{menu.Day}</span>
+					</div>
+					<div className={style.menuDetails}>
 						<span>Ret:</span>
 						<span>{menu.Meal}</span>
 					</div>

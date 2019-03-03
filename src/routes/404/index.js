@@ -1,18 +1,26 @@
 import { h, Component } from 'preact';
 import Card from 'preact-material-components/Card';
-import 'preact-material-components/Card/style.css';
+import Button from 'preact-material-components/Button';
+import { route } from 'preact-router';
 import style from './style';
 
 export default class NotFound extends Component {
+	goHome = e => {
+		route('/osteklokken/home', true);
+	};
+
 	render() {
 		return (
-			<div class={style.home}>
+			<div className={style.home}>
 				<Card>
-					<div class={style.cardHeader}>
-						<h2 class=" mdc-typography--title">Siden blev ikke fundet</h2>
+					<div className={style.cardHeader}>
+						<h2 className=" mdc-typography--title">Hovsa! Det var ikke meningen du skulle havne her.</h2>
 					</div>
-					<div class={style.cardBody}>
-						Den side du ledte efter kunne ikke findes,
+					<div className={style.cardBody}>
+						<p>Der må være en løs forbindelse et sted. Sig lige til Tobias hvad du trykkede på, så han kan fikse det👷👷👷👷👷.</p>
+						<div className={style.goHomeButtonContainer}>
+							<Button className={style.goHomeButton} onClick={this.goHome} primary>Gå til startsiden</Button>
+						</div>
 					</div>
 				</Card>
 			</div>

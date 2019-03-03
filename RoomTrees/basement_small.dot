@@ -1,0 +1,36 @@
+digraph Direction {
+	// Stage: #40e0d0
+	// Low:   #32FF32
+	// Med:	  #FFFF66
+	// High:  #FF3232
+
+	// Stages
+	
+
+	Research, Modification, Verification [fillcolor="#40e0d0", style=filled];
+
+	// Low
+	"Engine Map", "Facade Interconnection", Numerical, "C# Component", "Wrapper Layer", "Functional Style", "Modern Style", Microbenchmarks, Macrobenchmarks, "Cognitive Dimensions Analysis", "Git Commit Analysis" [fillcolor="#32FF32", style=filled];
+
+	// Medium
+	"Science and Industry", Physics, "Data Flow Component", "Terrain?", "Parallel Component", "Application Benchmark (FPS)", IDA, "Discount Usability Method", "API Evaluation" [fillcolor="#FFFF66", style=filled];
+
+	// High
+	"Unreal vs Godot", "Inter-Runtime Costs", "F# Component", "A.I.", "Runtime Switcharoo", "Memory Analysis", "GPU benchmark" [fillcolor="#FF3232", style=filled];
+	
+
+	Research -> "Science and Industry", "Engine Map", "Unreal vs Godot" -> Modification;
+	Research -> Crosscutting;
+	Crosscutting -> "Facade Interconnection", "Inter-Runtime Costs" -> Modification;
+     
+	Modification -> Physics, "F# Component", "Data Flow Component" -> Verification;
+     	Modification -> "Lazy Component", ".Net Core", Parallelism, "C++";
+	"C++" -> "Functional Style", "Modern Style" -> Verification
+     	".Net Core" -> "Runtime Switcharoo", "C# Component" -> Verification;     
+     	Parallelism -> "Wrapper Layer", "Parallel Component" -> Verification;
+     	"Lazy Component" -> "Terrain?", Numerical, "A.I." -> Verification;
+
+ 	Verification -> Performance, Usability;
+	Performance -> Microbenchmarks, Macrobenchmarks, "Application Benchmark (FPS)", "Memory Analysis", "GPU benchmark";
+	Usability -> "Cognitive Dimensions Analysis", IDA, "Discount Usability Method", "API Evaluation", "Git Commit Analysis";
+}

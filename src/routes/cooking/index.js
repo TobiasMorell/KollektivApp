@@ -1,7 +1,4 @@
 import { h, Component } from 'preact';
-import Card from 'preact-material-components/Card';
-import 'preact-material-components/Card/style.css';
-import 'preact-material-components/Button/style.css';
 import style from './style.css';
 import Backend from '../../Backend';
 import Dialog from 'preact-material-components/Dialog';
@@ -10,7 +7,20 @@ import linkState from 'linkstate';
 import Fab from 'preact-material-components/Fab';
 import toast from '../../components/toast';
 import CookingCard from './CookingCard';
-import ShoppingListItem from '../shopping/ShoppingListItem';
+import Select from 'preact-material-components/Select';
+
+function weekdayToIndex (weekday) {
+	switch (weekday) {
+		case 'Mandag': return 0;
+		case 'Tirsdag': return 1;
+		case 'Onsdag': return 2;
+		case 'Torsdag': return 3;
+		case 'Fredag': return 4;
+		case 'Lørdag': return 5;
+		case 'Søndag': return 6;
+		default: return 0;
+	}
+}
 
 export default class Cooking extends Component {
 	state = {
@@ -35,7 +45,9 @@ export default class Cooking extends Component {
 			addNewItem: false,
 			newChef: menu.Chef,
 			newMeal: menu.Meal,
-			newWeek: menu.Week
+			newWeek: menu.Week,
+			newWeekday: menu.Day,
+			selectedIndex: weekdayToIndex(menu.Day)
 		});
 		this.addItemDlg.MDComponent.show();
 	};
@@ -60,7 +72,9 @@ export default class Cooking extends Component {
 			addNewItem: undefined,
 			newMeal: '',
 			newChef: '',
-			newWeek: ''
+			newWeek: '',
+			newWeekday: '',
+			selectedIndex: 0
 		});
 	};
 
@@ -70,6 +84,7 @@ export default class Cooking extends Component {
 		fd.append('chef', this.state.newChef);
 		fd.append('meal', this.state.newMeal);
 		fd.append('week', this.state.newWeek);
+		fd.append('weekday', this.state.newWeekday);
 
 		if (this.state.addNewItem) {
 			Backend.addMenuSchedule(fd)
@@ -83,7 +98,7 @@ export default class Cooking extends Component {
 		else {
 			Backend.updateMenuSchedule(fd)
 				.then(r => {
-					let newItems = this.state.schedule.filter(i => i.Week !== this.state.newWeek).concat(r);
+					let newItems = this.state.schedule.filter(i => i.Week !== this.state.newWeek).concat(r).sort((c1, c2) => c1.Week - c2.Week);
 					this.setState({ schedule: newItems, editWare: undefined });
 					this.clearItemDialog();
 				}).catch(e => {
@@ -135,6 +150,22 @@ export default class Cooking extends Component {
 							onInput={linkState(this, 'newWeek')} value={this.state.newWeek} label="Uge Nummer"
 							onkeydown={this.submitOnEnter} required
 						/>
+						<div className={style.wideInputField}>
+							<Select hintText="Vælg en ugedag"
+								selectedIndex={this.state.chosenIndex}
+								onChange={e => {
+									this.setState({ chosenIndex: e.target.selectedIndex, newWeekday: e.target.value });
+								}}
+							>
+								<Select.Item value="Monday">Mandag</Select.Item>
+								<Select.Item value="Tuesday">Tirsdag</Select.Item>
+								<Select.Item value="Wednesday">Onsdag</Select.Item>
+								<Select.Item value="Thursday">Torsdag</Select.Item>
+								<Select.Item value="Friday">Fredag</Select.Item>
+								<Select.Item value="Saturday">Lørdag</Select.Item>
+								<Select.Item value="Sunday">Søndag</Select.Item>
+							</Select>
+						</div>
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton cancel >Annuller</Dialog.FooterButton>

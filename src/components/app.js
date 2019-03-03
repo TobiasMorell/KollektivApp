@@ -1,6 +1,9 @@
 import { h, Component } from 'preact';
 import { route, Router } from 'preact-router';
 
+import Button from 'preact-material-components/Button';
+import Icon from 'preact-material-components/Icon';
+
 import Header from './header';
 import Home from '../routes/home';
 import Login from '../routes/login';
@@ -10,12 +13,31 @@ import toast from './toast';
 import '../style/index.css';
 import '../style/toastr.css';
 
+import logo from '../assets/logo_only_cheese.png';
+
 export default class App extends Component {
+	deferredPrompt;
+	state = {
+		showInstall: false
+	};
+
 	componentDidCatch(error, errorInfo) {
 		//This does not work yet, but will so soon (hopefully)
 		console.error(error, errorInfo);
 		toast('Ups! Der skete en fejl', error, 'error');
 	}
+
+	componentDidMount = () => {
+		/*
+		window.addEventListener('beforeinstallprompt', (e) => {
+			console.log(e);
+			// Prevent Chrome 67 and earlier from automatically showing the prompt
+			e.preventDefault();
+			// Stash the event so it can be triggered later.
+			this.deferredPrompt = e;
+			this.setState({ showInstall: true });
+		});*/
+	};
 
 	/** Gets fired when the route changes.
 	 *	@param {Object} event		"change" event from [preact-router](http://git.io/preact-router)
@@ -32,6 +54,26 @@ export default class App extends Component {
 		else if (e.url !== '/osteklokken/')
 			this.header.setState({ active: true });
 	};
+
+	/*
+	installNatively = (e) => {
+		// hide our user interface that shows our A2HS button
+		this.setState({ showInstall: false });
+		// Show the prompt
+		this.deferredPrompt.prompt();
+		// Wait for the user to respond to the prompt
+		this.deferredPrompt.userChoice
+			.then((choiceResult) => {
+				if (choiceResult.outcome === 'accepted') {
+					console.log('User accepted the A2HS prompt');
+				}
+				else {
+					console.log('User dismissed the A2HS prompt');
+				}
+				this.deferredPrompt = null;
+			});
+
+	};*/
 
 	render() {
 
@@ -58,4 +100,14 @@ export default class App extends Component {
 			</div>
 		);
 	}
+
+	/*Installer
+	<div className="installation-prompt" style={{ display: this.state.showInstall ? 'block' : 'none' }}>
+					<div className="installation-logo-container">
+						<img src={logo} />
+					</div>
+					<Button onClick={this.installNatively} primary>Installer</Button>
+					<Icon className="close-button">close</Icon>
+				</div>
+	* */
 }

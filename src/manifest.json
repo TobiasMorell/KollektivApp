@@ -1,19 +1,19 @@
 {
-  "name": "Osteklokkens Indkøbsliste",
-  "short_name": "shopping-list",
-  "start_url": "/",
+  "name": "Kollektivet Osteklokken",
+  "short_name": "Osteklokken",
+  "start_url": "/osteklokken/login",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff",
   "theme_color": "#ebc877",
   "icons": [
     {
-      "src": "/assets/icons/logo-192x192.png",
+      "src": "/osteklokken/assets/icons/logo-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/assets/icons/logo-512x512.png",
+      "src": "/osteklokken/assets/icons/logo-512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

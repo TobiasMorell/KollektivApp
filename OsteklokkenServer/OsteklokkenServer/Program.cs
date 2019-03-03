@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -21,6 +22,14 @@ namespace OsteklokkenServer
 {
     class Program
     {
+
+        private static bool Compare(string name1, string name2)
+        {
+            var formattedName1 = name1.ToLower().Trim();
+            var formattedName2 = name2.ToLower().Trim();
+            return formattedName1 == formattedName2;
+        }
+        
         static void Main(string[] args)
         {
             var server = new RedHttpServer(5000, "public");
@@ -29,6 +38,8 @@ namespace OsteklokkenServer
             var shoppingItems = db.GetCollection<ShoppingItem>("shoppingItems");
             var cookingSchedule = db.GetCollection<Cooking>("cooking");
             var rules = db.GetCollection<KollexiconRule>("kollexicon");
+            
+            var dateTimeFormat = new CultureInfo( "da-DK" ).DateTimeFormat;
             
             server.Use(new CookieSessions<OsteSession>(
                 new CookieSessionSettings(TimeSpan.FromDays(14))
@@ -75,7 +86,7 @@ namespace OsteklokkenServer
                 string username = form["username"];
                 string password = form["password"];
                 
-                var user = users.FindOne(u => username.ToLower() == u.Username.ToLower());
+                var user = users.FindOne(u => Compare(username, u.Username));
                 if (user == null)
                 {
                     await res.SendString("Brugernavn eller kodeord er ikke korrekt", status: HttpStatusCode.BadRequest);
@@ -132,8 +143,7 @@ namespace OsteklokkenServer
                 try
                 {
                     var allowedRegistrants = await File.ReadAllLinesAsync("./AllowedUsers.txt");
-
-                    if (!allowedRegistrants.Contains(registrant))
+                    if (!allowedRegistrants.Any(n => Compare(n, registrant)))
                     {
                         await res.SendString(
                             "Du står ikke på listen af nuværende beboere. Tal med Tobias hvis det er en fejl",
@@ -147,7 +157,7 @@ namespace OsteklokkenServer
                     return;
                 }
 
-                var userWithSameUsername = users.FindOne(u => u.Username.ToLower() == username.ToLower());
+                var userWithSameUsername = users.FindOne(u => Compare(u.Username, username));
                 if (userWithSameUsername != null)
                 {
                     await res.SendString("Brugernavnet er optaget", status: HttpStatusCode.BadRequest);
@@ -172,7 +182,7 @@ namespace OsteklokkenServer
                     throw;
                 }
                 
-                req.OpenSession(new OsteSession
+                await req.OpenSession(new OsteSession
                 {
                     Username = username,
                     Name = registrant
@@ -187,16 +197,9 @@ namespace OsteklokkenServer
 
                 string username = form["username"];
                 string registrant = form["registrant"];
-                string newPassword1 = form["password1"];
-                string newPassword2 = form["password2"];
-
-                if (newPassword1 != newPassword2)
-                {
-                    await res.SendString("De to kodeord er ikke ens", status: HttpStatusCode.BadRequest);
-                    return;
-                }
+                string newPassword1 = form["password"];
                 
-                var user = users.FindOne(u => u.Username == username && u.Name == registrant);
+                var user = users.FindOne(u => Compare(u.Username, username) && Compare(u.Name, registrant));
                 if (user != null)
                 {
                     user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword1);
@@ -285,19 +288,36 @@ namespace OsteklokkenServer
             server.Get("/api/cooking", Auth, async (req, res) =>
             {
                 var c = cookingSchedule.FindAll();
-                await res.SendJson(c);
+                await res.SendJson(c.Select(cook =>
+                {
+                    var dayName = dateTimeFormat.GetDayName(cook.Day);
+                    return new
+                    {
+                        Day = char.ToUpper(dayName[0]) + dayName.Substring(1),
+                        cook.Week,
+                        cook.Chef,
+                        cook.Meal
+                    };
+                }));
             });
             server.Post("/api/cooking", Auth, async (req, res) =>
             {
                 var form = await req.GetFormDataAsync();
-                if (!form.ContainsKey("chef") || !form.ContainsKey("meal") || !form.ContainsKey("week"))
+                if (!form.ContainsKey("chef") || !form.ContainsKey("meal") || !form.ContainsKey("week") || !form.ContainsKey("weekday"))
                 {
-                    await res.SendString("'name' or 'category' is missing.", status: HttpStatusCode.BadRequest);
+                    await res.SendString("'name', 'meal, 'weekday' or 'category' is missing.", status: HttpStatusCode.BadRequest);
                     return;
                 }
                 if (!int.TryParse(form["week"], out var week))
                 {
                     await res.SendString("'week' must be an int");
+                    return;
+                }
+
+                if (!Enum.TryParse<DayOfWeek>(form["weekday"], out var day))
+                {
+                    await res.SendString("The value of 'weekday' was not valid: " + form["weekday"],
+                        status: HttpStatusCode.BadRequest);
                     return;
                 }
 
@@ -312,7 +332,8 @@ namespace OsteklokkenServer
                 {
                     Week = week,
                     Chef = form["chef"],
-                    Meal = form["meal"]
+                    Meal = form["meal"],
+                    Day = day
                 };
                 cookingSchedule.Insert(i);
                 await res.SendJson(i);
@@ -330,19 +351,33 @@ namespace OsteklokkenServer
                     await res.SendString("'week' must be an int");
                     return;
                 }
+                if (!Enum.TryParse<DayOfWeek>(form["weekday"], out var day))
+                {
+                    await res.SendString("The value of 'weekday' was not valid: " + form["weekday"],
+                        status: HttpStatusCode.BadRequest);
+                    return;
+                }
 
-                var items = cookingSchedule.FindOne(i => i.Week == week);
-                if (items == null)
+                var cook = cookingSchedule.FindOne(i => i.Week == week);
+                if (cook == null)
                 {
                     await res.SendString("Der findes ikke noget måltid for den uge", status: HttpStatusCode.BadRequest);
                     return;
                 }
 
-                items.Week = week;
-                items.Meal = form["meal"];
-                items.Chef = form["chef"];
-                cookingSchedule.Update(items);
-                await res.SendJson(items);
+                cook.Week = week;
+                cook.Meal = form["meal"];
+                cook.Chef = form["chef"];
+                cook.Day = day;
+                cookingSchedule.Update(cook);
+                var dayName = dateTimeFormat.GetDayName(day);
+                await res.SendJson(new
+                {
+                    Day = char.ToUpper(dayName[0]) + dayName.Substring(1),
+                    cook.Week,
+                    cook.Chef,
+                    cook.Meal
+                });
             });
             
             server.Delete("/api/cooking", Auth, async (req, res) =>

@@ -68,6 +68,10 @@
 
 .wideInputField {
     width: 95%;
+    margin: 0 auto;
+}
+.wideInputField > div {
+    width: 100%;
 }
 
 .addCategoryIcon {

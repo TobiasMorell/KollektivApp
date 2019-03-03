@@ -1,3 +1,4 @@
+using System;
 using LiteDB;
 
 namespace OsteklokkenServer
@@ -8,5 +9,7 @@ namespace OsteklokkenServer
         public string Meal { get; set; }
         [BsonId]
         public int Week { get; set; }
+
+        public DayOfWeek Day { get; set; }
     }
 }
