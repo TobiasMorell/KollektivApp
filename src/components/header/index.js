@@ -51,6 +51,7 @@ export default class Header extends Component {
 	goToShopping = this.linkTo('/shopping');
 	goToCooking = this.linkTo('/cooking');
 	goToKollexicon = this.linkTo('/kollexicon');
+	goToFixit = this.linkTo('/pedel');
 
 	DrawerItem = ({ onSelected, icon, text, selected } ) => (
 		<Drawer.DrawerItem onClick={onSelected} selected={selected}>
@@ -69,6 +70,7 @@ export default class Header extends Component {
 				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste"  />
 				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning"  />
 				<this.DrawerItem onSelected={this.goToKollexicon} icon="gavel" text="Kolleksikon"  />
+				<this.DrawerItem onSelected={this.goToFixit} icon="build" text="Pedelliste"  />
 			</Drawer.DrawerContent>
 		</Drawer>);
 

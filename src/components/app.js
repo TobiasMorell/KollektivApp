@@ -1,9 +1,5 @@
 import { h, Component } from 'preact';
 import { route, Router } from 'preact-router';
-
-import Button from 'preact-material-components/Button';
-import Icon from 'preact-material-components/Icon';
-
 import Header from './header';
 import Home from '../routes/home';
 import Login from '../routes/login';
@@ -12,8 +8,6 @@ import AsyncRoute from 'preact-async-route';
 import toast from './toast';
 import '../style/index.css';
 import '../style/toastr.css';
-
-import logo from '../assets/logo_only_cheese.png';
 
 export default class App extends Component {
 	deferredPrompt;
@@ -40,8 +34,8 @@ export default class App extends Component {
 	};
 
 	/** Gets fired when the route changes.
-	 *	@param {Object} event		"change" event from [preact-router](http://git.io/preact-router)
-	 *	@param {string} event.url	The newly routed URL
+	 *	@param {Object} e		"change" event from [preact-router](http://git.io/preact-router)
+	 *	@param {string} e.url	The newly routed URL
 	 */
 	handleRoute = e => {
 		if (e.url === '/osteklokken/')
@@ -94,6 +88,9 @@ export default class App extends Component {
 					<AsyncRoute
 						path="/osteklokken/kollexicon"
 						getComponent={() => import('../routes/kollexicon').then(m => m.default)}
+					/>
+					<AsyncRoute path={'/osteklokken/pedel'}
+						getComponent={() => import('../routes/pedel').then(m => m.default)}
 					/>
 					<NotFound default />
 				</Router>

@@ -38,6 +38,9 @@ namespace OsteklokkenServer
             var shoppingItems = db.GetCollection<ShoppingItem>("shoppingItems");
             var cookingSchedule = db.GetCollection<Cooking>("cooking");
             var rules = db.GetCollection<KollexiconRule>("kollexicon");
+            var fixits = db.GetCollection<Fixit>("fixits");
+            if (!Directory.Exists("public"))
+                Directory.CreateDirectory("public");
             
             var dateTimeFormat = new CultureInfo( "da-DK" ).DateTimeFormat;
             
@@ -153,7 +156,7 @@ namespace OsteklokkenServer
                 }
                 catch (Exception e)
                 {
-                    await res.SendString(e.ToString(), status: HttpStatusCode.InternalServerError);
+                    await res.SendString("Listen med beboere kunne ikke hentes", status: HttpStatusCode.InternalServerError);
                     return;
                 }
 
@@ -479,6 +482,90 @@ namespace OsteklokkenServer
                 rules.Delete(m.Id);
                 await res.SendStatus(HttpStatusCode.OK);
             });
+            #endregion
+
+            #region Fixit
+
+            server.Get("/api/fixit", Auth, async (req, res) =>
+            {
+                var items = fixits.FindAll();
+                await res.SendJson(items);
+            });
+            server.Get("/api/fixit/:img", async (req, res) =>
+            {
+                await res.SendFile("./public/" + req.Parameters["img"]);
+            });
+
+            server.Post("/api/fixit", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!Fixit.TryValidate(form, out var fixit))
+                {
+                    await res.SendString("'title' or 'description' is missing", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                try
+                {
+                    fixit.Id = Guid.NewGuid().ToString("N");
+                    var imgName = form.Files.GetFile("image").FileName;
+                    var ext = Path.GetExtension(imgName);
+
+                    await req.SaveFiles("public", old => fixit.Id + ext);
+                    fixit.ImagePath = fixit.Id + ext;
+                }
+                catch (Exception e)
+                {
+                    await res.SendString("Filen kunne ikke gemmes, den er nok for stor",
+                        status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                fixits.Insert(fixit);
+                await res.SendJson(fixit);
+            });
+
+            server.Put("/api/fixit", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!Fixit.TryValidate(form, out var fixit, true))
+                {
+                    await res.SendString("'title', 'description' or 'id' is missing.", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                var f = fixits.FindOne(i => i.Id == fixit.Id);
+                if (f == null)
+                {
+                    await res.SendString("Invalid item Id", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                if (form.Files.Any())
+                {
+                    await req.SaveFiles("public");
+                    fixit.ImagePath = form.Files.GetFile("image").FileName;
+                }
+                else
+                    fixit.ImagePath = f.ImagePath;
+
+                fixits.Update(fixit);
+                await res.SendJson(fixits);
+            });
+
+            server.Delete("/api/fixit", Auth, async (req, res) =>
+            {
+                var form = await req.GetFormDataAsync();
+                if (!form.ContainsKey("id"))
+                {
+                    await res.SendString("'id' is missing", status: HttpStatusCode.BadRequest);
+                    return;
+                }
+
+                shoppingItems.Delete(form["id"].ToString());
+                await res.SendStatus(HttpStatusCode.OK);
+            });
+
             #endregion
 
             server.Start();

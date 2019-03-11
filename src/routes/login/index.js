@@ -37,6 +37,7 @@ export default class Login extends Component {
 			e.srcElement.reset();
 			route('/osteklokken/home', true);
 		}).catch(e => {
+			console.log('Failed to log in', e);
 			toast('Login mislykkedes', e, 'error');
 		});
 	};
@@ -50,6 +51,7 @@ export default class Login extends Component {
 			toast('Din bruger blev registreret');
 			this.setState({ action: 'login' });
 		}).catch(e => {
+			console.log('Failed to log in', e);
 			toast('Din bruger kunne ikke registreres', e, 'error');
 		});
 	};

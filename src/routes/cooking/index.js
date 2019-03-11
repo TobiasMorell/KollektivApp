@@ -24,17 +24,17 @@ function weekdayToIndex (weekday) {
 
 export default class Cooking extends Component {
 	state = {
-		schedule: []
+		fixitItems: []
 	};
 	domIds = {
-		dialogNameId: 'menu-dialog-name',
-		dialogMealId: 'menu-dialog-meal',
-		dialogWeek: 'menu-dialog-week'
+		dialogTitleId: 'menu-dialog-name',
+		dialogDescId: 'menu-dialog-meal',
+		dialogImage: 'menu-dialog-week'
 	};
 
 	componentWillMount() {
 		Backend.getMenuSchedule().then(r => {
-			this.setState({ schedule: r });
+			this.setState({ fixitItems: r });
 		}).catch(e => {
 			toast('Madplanen kunne ikke hentes', e, 'error');
 		});
@@ -90,7 +90,7 @@ export default class Cooking extends Component {
 			Backend.addMenuSchedule(fd)
 				.then(r => {
 					this.clearItemDialog();
-					this.setState({ schedule: this.state.schedule.concat(r), editWare: undefined });
+					this.setState({ fixitItems: this.state.schedule.concat(r), editItem: undefined });
 				}).catch(e => {
 					toast('Kunne ikke tilføje madplan', e, 'error');
 				});
@@ -99,7 +99,7 @@ export default class Cooking extends Component {
 			Backend.updateMenuSchedule(fd)
 				.then(r => {
 					let newItems = this.state.schedule.filter(i => i.Week !== this.state.newWeek).concat(r).sort((c1, c2) => c1.Week - c2.Week);
-					this.setState({ schedule: newItems, editWare: undefined });
+					this.setState({ fixitItems: newItems, editItem: undefined });
 					this.clearItemDialog();
 				}).catch(e => {
 					toast('Kunne ikke opdatere madplan', e, 'error');
@@ -128,7 +128,7 @@ export default class Cooking extends Component {
 					if (m === this.state.upForDeletion){
 						let item =  <CookingCard className={style.delete} menu={m} />;
 						setTimeout(() => {
-							this.setState({ schedule: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
+							this.setState({ fixitItems: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
 						}, 510);
 						return item;
 					}

@@ -33,7 +33,7 @@ export default class Shopping extends Component {
 	openEditMenu = (ware) => {
 		this.setState({
 			addNewItem: false,
-			editWare: ware,
+			editItem: ware,
 			newName: ware.Name
 		});
 		this.autoCompleter.setRecommendation(ware.Category);
@@ -83,7 +83,7 @@ export default class Shopping extends Component {
 		this.setState({
 			addNewItem: false,
 			newName: '',
-			editWare: undefined
+			editItem: undefined
 		});
 	};
 
@@ -92,14 +92,14 @@ export default class Shopping extends Component {
 		let fd = new FormData();
 		fd.append('name', this.state.newName);
 		fd.append('category', this.autoCompleter.getRecommendation());
-		if (this.state.editWare)
-			fd.append('id', this.state.editWare.Id);
+		if (this.state.editItem)
+			fd.append('id', this.state.editItem.Id);
 
 		if (this.state.addNewItem) {
 			Backend.addShoppingListItem(fd)
 				.then(r => {
 					this.clearItemDialog();
-					this.setState({ items: this.state.items.concat(r), editWare: undefined });
+					this.setState({ items: this.state.items.concat(r), editItem: undefined });
 				}).catch(e => {
 					toast('Kunne ikke tilføje til indkøbslisten', e, 'error');
 				});
@@ -107,8 +107,8 @@ export default class Shopping extends Component {
 		else {
 			Backend.updateShoppingListItem(fd)
 				.then(r => {
-					let newItems = this.state.items.filter(i => i.Id !== this.state.editWare.Id).concat(r);
-					this.setState({ items: newItems, editWare: undefined });
+					let newItems = this.state.items.filter(i => i.Id !== this.state.editItem.Id).concat(r);
+					this.setState({ items: newItems, editItem: undefined });
 					this.clearItemDialog();
 				}).catch(e => {
 					toast('Kunne ikke opdatere punkt', e, 'error');
@@ -136,7 +136,7 @@ export default class Shopping extends Component {
 	}
 
 	deleteItemMobile = e => {
-		this.deleteItem(this.state.editWare);
+		this.deleteItem(this.state.editItem);
 		this.clearItemDialog();
 		this.addItemDlg.MDComponent.close();
 	};

@@ -104,32 +104,15 @@ export default class Backend {
 		return await this._osteRequest('/api/resetpassword', 'POST', updatePasswordform);
 	}
 
-	/**
-	 * Get the items on the shopping list.
-     * @returns {Promise<Array|never>}
-     */
 	static getShoppingListItems() {
 		return this._osteRequest('/api/shopping', 'GET', null, true);
 	}
-
-	/**
-	 * Adds an item to the shopping list.
-     * @param shoppingListForm {FormData} - A form containing information about the new item.
-     * @returns {Promise<Response|never>}
-     */
 	static addShoppingListItem(shoppingListForm) {
 		return this._osteRequest('/api/shopping', 'POST', shoppingListForm, true);
 	}
-
-	/**
-	 * Update an item on the shopping list.
-     * @param updateItemForm {FormData} - A form containing update information about the item.
-     * @returns {Promise<Response|never>}
-     */
 	static updateShoppingListItem(updateItemForm) {
 		return this._osteRequest('/api/shopping', 'PUT', updateItemForm, true);
 	}
-
 	static async setShoppingItemState(item, active) {
 		let formData = new FormData();
 		formData.append('name', item.Name);
@@ -139,7 +122,6 @@ export default class Backend {
 
 		return this.updateShoppingListItem(formData);
 	}
-
 	static deleteShoppingItem(item) {
 		let formData = new FormData();
 		formData.append('id', item.Id);
@@ -147,32 +129,15 @@ export default class Backend {
 		return this._osteRequest('/api/shopping', 'DELETE', formData);
 	}
 
-	/**
-	 * Get the items on the menu schedule.
-	 * @returns {Promise<Array|never>}
-	 */
 	static getMenuSchedule() {
 		return this._osteRequest('/api/cooking', 'GET', null, true);
 	}
-
-	/**
-	 * Adds an item to the shopping list.
-	 * @param shoppingListForm {FormData} - A form containing information about the new item.
-	 * @returns {Promise<Response|never>}
-	 */
 	static addMenuSchedule(shoppingListForm) {
 		return this._osteRequest('/api/cooking', 'POST', shoppingListForm, true);
 	}
-
-	/**
-	 * Update an item on the shopping list.
-	 * @param updateItemForm {FormData} - A form containing update information about the item.
-	 * @returns {Promise<Response|never>}
-	 */
 	static updateMenuSchedule(updateItemForm) {
 		return this._osteRequest('/api/cooking', 'PUT', updateItemForm, true);
 	}
-
 	static deleteMenuSchedule(item) {
 		let formData = new FormData();
 		formData.append('week', item.Week);
@@ -180,36 +145,36 @@ export default class Backend {
 		return this._osteRequest('/api/cooking', 'DELETE', formData);
 	}
 
-	/**
-	 * Get the items on the menu schedule.
-	 * @returns {Promise<Array|never>}
-	 */
 	static getKollexicon() {
 		return this._osteRequest('/api/kollexicon', 'GET', null, true);
 	}
-
-	/**
-	 * Adds an item to the shopping list.
-	 * @param ruleForm {FormData} - A form containing information about the new rule.
-	 * @returns {Promise<Response|never>}
-	 */
 	static addKollexiconRule(ruleForm) {
 		return this._osteRequest('/api/kollexicon', 'POST', ruleForm, true);
 	}
-
-	/**
-	 * Update an item on the shopping list.
-	 * @param updateRuleForm {FormData} - A form containing update information about the rule.
-	 * @returns {Promise<Response|never>}
-	 */
 	static updateKollexiconRule(updateRuleForm) {
 		return this._osteRequest('/api/kollexicon', 'PUT', updateRuleForm, true);
 	}
-
 	static deleteKollexiconRule(rule) {
 		let formData = new FormData();
 		formData.append('id', rule.Id);
 
 		return this._osteRequest('/api/kollexicon', 'DELETE', formData);
+	}
+
+	static getFixits() {
+		return this._osteRequest('/api/fixit', 'GET', null, true);
+	}
+	static addFixit(fixitForm) {
+		return this._osteRequest('/api/fixit', 'POST', fixitForm, true);
+	}
+	static updateFixit(updateRuleForm) {
+		return this._osteRequest('/api/fixit', 'PUT', updateRuleForm, true);
+	}
+
+	static deleteFixit(fixit) {
+		let formData = new FormData();
+		formData.append('id', fixit.Id);
+
+		return this._osteRequest('/api/fixit', 'DELETE', formData);
 	}
 }
