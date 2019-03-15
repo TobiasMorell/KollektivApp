@@ -2,7 +2,7 @@ import { h, Component } from 'preact';
 import Card from 'preact-material-components/Card';
 import Button from 'preact-material-components/Button';
 import { route } from 'preact-router';
-import style from './style';
+import style from './style.css';
 
 export default class NotFound extends Component {
 	goHome = e => {

@@ -9,10 +9,13 @@ import toast from '../../components/toast';
 import FixCard from './FixCard';
 import FormField from 'preact-material-components/FormField';
 import Button from 'preact-material-components/Button';
+import Cropper from 'cropperjs';
+import 'cropperjs/dist/cropper.min.css';
 
 export default class Cooking extends Component {
 	state = {
-		fixitItems: []
+		fixitItems: [],
+		editImage: false
 	};
 	domIds = {
 		dialogTitleId: 'menu-dialog-title',
@@ -69,31 +72,33 @@ export default class Cooking extends Component {
 		let fd = new FormData();
 		fd.append('title', this.state.title);
 		fd.append('description', this.state.description);
-		fd.append('image', this.state.image);
+		this.cropper.getCroppedCanvas().toBlob(croppedImage => {
+			fd.append('image', croppedImage);
 
-		if (this.state.addNewItem) {
-			Backend.addFixit(fd)
-				.then(r => {
-					this.clearItemDialog();
-					this.setState({ fixitItems: this.state.fixitItems.concat(r), editItem: undefined });
-				}).catch(e => {
-					toast('Kunne ikke tilføje punktet til listen', e, 'error');
-				});
-		}
-		else {
-			fd.append('id', this.state.id);
-			Backend.updateFixit(fd)
-				.then(r => {
-					//Force refresh the image
-					r.ImagePath += '?' + new Date().getTime();
+			if (this.state.addNewItem) {
+				Backend.addFixit(fd)
+					.then(r => {
+						this.clearItemDialog();
+						this.setState({ fixitItems: this.state.fixitItems.concat(r), editItem: undefined });
+					}).catch(e => {
+						toast('Kunne ikke tilføje punktet til listen', e, 'error');
+					});
+			}
+			else {
+				fd.append('id', this.state.id);
+				Backend.updateFixit(fd)
+					.then(r => {
+						//Force refresh the image
+						r.ImagePath += '?' + new Date().getTime();
 
-					let newItems = this.state.fixitItems.filter(i => i.Id !== r.Id).concat(r);
-					this.setState({ fixitItems: newItems, editItem: undefined });
-					this.clearItemDialog();
-				}).catch(e => {
-					toast('Kunne ikke opdatere punktet', e, 'error');
-				});
-		}
+						let newItems = this.state.fixitItems.filter(i => i.Id !== r.Id).concat(r);
+						this.setState({ fixitItems: newItems, editItem: undefined });
+						this.clearItemDialog();
+					}).catch(e => {
+						toast('Kunne ikke opdatere punktet', e, 'error');
+					});
+			}
+		});
 	};
 
 	focusOnEnter = id => e => {
@@ -103,16 +108,39 @@ export default class Cooking extends Component {
 		}
 	};
 
-	submitOnEnter = e => {
-		if (e.key === 'Enter') {
-			this.confirmMenuDialog(e);
-			this.addItemDlg.MDComponent.close();
-		}
-	};
-
 	onFileInput = (ev) => {
-		console.log('askfjdhdsf djsaf ldhfas f');
-		this.setState({ image: ev.target.files[0] });
+		let files = ev.target.files;
+		if (files && files[0]) {
+			if (files[0].type.match(/^image\//) ) {
+				let reader = new FileReader();
+				let THIS = this;
+
+				reader.onload = evt => {
+					let img = new Image();
+					let context = this.imageCropper.getContext('2d');
+
+					img.onload = function() {
+						context.canvas.height = img.height;
+						context.canvas.width  = img.width;
+						context.drawImage(img, 0, 0);
+
+						THIS.setState({ editImage: true });
+
+						THIS.cropper = new Cropper(context.canvas, {
+							aspectRatio: 1
+						});
+					};
+					img.src = evt.target.result;
+				};
+				reader.readAsDataURL(files[0]);
+			}
+			else {
+				toast('Forkert filtype valgt', 'Vælg venligst et billede', 'error');
+			}
+		}
+		else {
+			toast('Du har ikke uploadet nogen filer', undefined, 'warning');
+		}
 	};
 
 	render() {
@@ -137,26 +165,28 @@ export default class Cooking extends Component {
 						{this.state.addNewItem ? 'Tilføj et punkt på pedellisten' : 'Rediger et punkt på pedellisten'}
 					</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
-						<TextField className={style.wideInputField} id={this.domIds.dialogTitleId}
-							onInput={linkState(this, 'title')} value={this.state.title} label="Hvad skal laves?"
-							onkeydown={this.focusOnEnter(this.domIds.dialogDescId)} required
-						/>
-						<TextField className={style.wideInputField} id={this.domIds.dialogDescId}
-							onInput={linkState(this, 'description')} value={this.state.description} label="Beskriv fejlen"
-							onkeydown={this.focusOnEnter(this.domIds.dialogImage)} required textarea
-						/>
-						<FormField>
+						<div style={{ display: this.state.editImage ? 'none' : 'inherit' }}>
+							<TextField className={style.wideInputField} id={this.domIds.dialogTitleId}
+								onInput={linkState(this, 'title')} value={this.state.title} label="Hvad skal laves?"
+								onkeydown={this.focusOnEnter(this.domIds.dialogDescId)} required
+							/>
+							<TextField className={style.wideInputField} id={this.domIds.dialogDescId}
+								onInput={linkState(this, 'description')} value={this.state.description} label="Beskriv fejlen"
+								onkeydown={this.focusOnEnter(this.domIds.dialogImage)} required textarea
+							/>
 							<p>{this.state.image ? this.state.image.name : 'Du har ikke valgt et billede endnu'}</p>
 							<Button className={style.wideInputField} id={this.domIds.dialogImage}
-								onClick={e => this.fileUpload.click()}
-								onkeydown={this.submitOnEnter} raised
+								onClick={e => this.fileUpload.click()} raised
 							>
-								Vælg et billede
+							Vælg et billede
 							</Button>
 							<input type="file" ref={fu => this.fileUpload = fu} style={{ display: 'none' }}
-								   onInput={this.onFileInput}
+								onInput={this.onFileInput}
 							/>
-						</FormField>
+						</div>
+						<div style={{ display: this.state.editImage ? 'inherit' : 'none', 'max-height': '500px' }}>
+							<canvas ref={img => this.imageCropper = img} />
+						</div>
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton cancel >Annuller</Dialog.FooterButton>
