@@ -63,8 +63,35 @@ export default class Cooking extends Component {
 			title: '',
 			description: '',
 			image: undefined,
-			Id: undefined
+			Id: undefined,
+			editImage: false
 		});
+		this.cropper = undefined;
+	};
+
+	uploadForm = form => {
+		if (this.state.addNewItem) {
+			Backend.addFixit(form)
+				.then(r => {
+					this.clearItemDialog();
+					this.setState({ fixitItems: this.state.fixitItems.concat(r), editItem: undefined });
+				}).catch(e => {
+					toast('Kunne ikke tilføje punktet til listen', e, 'error');
+				});
+		}
+		else {
+			form.append('id', this.state.id);
+			Backend.updateFixit(form)
+				.then(r => {
+					console.log(r);
+
+					let newItems = this.state.fixitItems.filter(i => i.Id !== r.Id).concat(r);
+					this.setState({ fixitItems: newItems, editItem: undefined });
+					this.clearItemDialog();
+				}).catch(e => {
+					toast('Kunne ikke opdatere punktet', e, 'error');
+				});
+		}
 	};
 
 	confirmMenuDialog = (e) => {
@@ -72,33 +99,14 @@ export default class Cooking extends Component {
 		let fd = new FormData();
 		fd.append('title', this.state.title);
 		fd.append('description', this.state.description);
-		this.cropper.getCroppedCanvas().toBlob(croppedImage => {
-			fd.append('image', croppedImage);
+		if (this.cropper)
+			this.cropper.getCroppedCanvas().toBlob(croppedImage => {
+				fd.append('image', croppedImage);
 
-			if (this.state.addNewItem) {
-				Backend.addFixit(fd)
-					.then(r => {
-						this.clearItemDialog();
-						this.setState({ fixitItems: this.state.fixitItems.concat(r), editItem: undefined });
-					}).catch(e => {
-						toast('Kunne ikke tilføje punktet til listen', e, 'error');
-					});
-			}
-			else {
-				fd.append('id', this.state.id);
-				Backend.updateFixit(fd)
-					.then(r => {
-						//Force refresh the image
-						r.ImagePath += '?' + new Date().getTime();
-
-						let newItems = this.state.fixitItems.filter(i => i.Id !== r.Id).concat(r);
-						this.setState({ fixitItems: newItems, editItem: undefined });
-						this.clearItemDialog();
-					}).catch(e => {
-						toast('Kunne ikke opdatere punktet', e, 'error');
-					});
-			}
-		});
+				this.uploadForm(fd);
+			});
+		else
+			this.uploadForm(fd);
 	};
 
 	focusOnEnter = id => e => {
@@ -189,6 +197,7 @@ export default class Cooking extends Component {
 						</div>
 					</Dialog.Body>
 					<Dialog.Footer>
+						<Dialog.FooterButton style={{ display: this.state.editImage ? 'inherit' : 'none' }} onClick={linkState(this, 'editImage', false)}>Tilbage</Dialog.FooterButton>
 						<Dialog.FooterButton cancel >Annuller</Dialog.FooterButton>
 						<Dialog.FooterButton accept >Gem</Dialog.FooterButton>
 					</Dialog.Footer>

@@ -543,14 +543,20 @@ namespace OsteklokkenServer
 
                 if (form.Files.Any())
                 {
-                    await req.SaveFiles("public");
-                    fixit.ImagePath = form.Files.GetFile("image").FileName;
+                    var imgName = form.Files.GetFile("image").FileName;
+                    var ext = Path.GetExtension(imgName);
+
+                    File.Delete(Path.Combine("public", f.ImagePath));
+                    await req.SaveFiles("public", old => f.Id + ext);
+                    fixit.ImagePath = f.Id + ext;
                 }
                 else
                     fixit.ImagePath = f.ImagePath;
 
                 fixits.Update(fixit);
-                await res.SendJson(fixits);
+                //Append a random query to the end of the image url to force refresh on frontend
+                fixit.ImagePath += "?" + DateTime.Now.Ticks;
+                await res.SendJson(fixit);
             });
 
             server.Delete("/api/fixit", Auth, async (req, res) =>
