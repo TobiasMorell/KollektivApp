@@ -553,6 +553,11 @@ namespace OsteklokkenServer
                 else
                     fixit.ImagePath = f.ImagePath;
 
+                if (form.ContainsKey("done") && bool.TryParse(form["done"], out var done))
+                    fixit.Done = done;
+                else
+                    fixit.Done = f.Done;
+
                 fixits.Update(fixit);
                 //Append a random query to the end of the image url to force refresh on frontend
                 fixit.ImagePath += "?" + DateTime.Now.Ticks;
@@ -568,7 +573,7 @@ namespace OsteklokkenServer
                     return;
                 }
 
-                shoppingItems.Delete(form["id"].ToString());
+                fixits.Delete(form["id"].ToString());
                 await res.SendStatus(HttpStatusCode.OK);
             });
 

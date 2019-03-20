@@ -10,6 +10,7 @@ namespace OsteklokkenServer
         public string Title { get; set; }
         public string Description { get; set; }
         public string ImagePath { get; set; }
+        public bool Done { get; set; }
 
         public static bool TryValidate(IFormCollection form, out Fixit fixit, bool requireId = false)
         {

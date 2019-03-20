@@ -12,6 +12,12 @@ import Button from 'preact-material-components/Button';
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.min.css';
 
+function lexSort(a, b) {
+	if (a.Title < b.Title) return -1;
+	if (a.Title > b.Title) return 1;
+	return 0;
+}
+
 export default class Cooking extends Component {
 	state = {
 		fixitItems: [],
@@ -26,7 +32,7 @@ export default class Cooking extends Component {
 
 	componentWillMount() {
 		Backend.getFixits().then(r => {
-			this.setState({ fixitItems: r });
+			this.setState({ fixitItems: r.sort(lexSort) });
 		}).catch(e => {
 			toast('Pedellisten kunne ikke hentes', e, 'error');
 		});
@@ -57,6 +63,15 @@ export default class Cooking extends Component {
 		});
 	};
 
+	markDone = fixit => () => {
+		Backend.markAsDone(fixit).then(r => {
+			let fixits = this.state.fixitItems.filter(f => f.Id !== r.Id).concat(r).sort(lexSort);
+			this.setState({ fixitItems: fixits });
+		}).catch(e => {
+			toast(`Punktet ${fixit.Title} kunne ikke markeres som udført`, e, 'error');
+		});
+	};
+
 	clearItemDialog = () => {
 		this.setState({
 			addNewItem: undefined,
@@ -74,7 +89,7 @@ export default class Cooking extends Component {
 			Backend.addFixit(form)
 				.then(r => {
 					this.clearItemDialog();
-					this.setState({ fixitItems: this.state.fixitItems.concat(r), editItem: undefined });
+					this.setState({ fixitItems: this.state.fixitItems.concat(r).sort(lexSort), editItem: undefined });
 				}).catch(e => {
 					toast('Kunne ikke tilføje punktet til listen', e, 'error');
 				});
@@ -85,7 +100,7 @@ export default class Cooking extends Component {
 				.then(r => {
 					console.log(r);
 
-					let newItems = this.state.fixitItems.filter(i => i.Id !== r.Id).concat(r);
+					let newItems = this.state.fixitItems.filter(i => i.Id !== r.Id).concat(r).sort(lexSort);
 					this.setState({ fixitItems: newItems, editItem: undefined });
 					this.clearItemDialog();
 				}).catch(e => {
@@ -163,7 +178,7 @@ export default class Cooking extends Component {
 						}, 510);
 						return item;
 					}
-					return <FixCard fixit={f} className={style.card} openEditMenu={this.openEditMenu(f)} deleteItem={this.deleteItem(f)} />;
+					return <FixCard fixit={f} className={style.card} openEditMenu={this.openEditMenu(f)} deleteItem={this.deleteItem(f)} markDone={this.markDone(f)} />;
 				})}
 
 				<Dialog onAccept={this.confirmMenuDialog} onCancel={this.clearItemDialog}
@@ -192,7 +207,7 @@ export default class Cooking extends Component {
 								onInput={this.onFileInput}
 							/>
 						</div>
-						<div style={{ display: this.state.editImage ? 'inherit' : 'none', 'max-height': '500px' }}>
+						<div className={style.imageEditContainer} style={{ display: this.state.editImage ? 'inherit' : 'none' }}>
 							<canvas ref={img => this.imageCropper = img} />
 						</div>
 					</Dialog.Body>

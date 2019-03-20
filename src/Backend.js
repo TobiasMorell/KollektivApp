@@ -170,11 +170,19 @@ export default class Backend {
 	static updateFixit(updateRuleForm) {
 		return this._osteRequest('/api/fixit', 'PUT', updateRuleForm, true);
 	}
-
 	static deleteFixit(fixit) {
 		let formData = new FormData();
 		formData.append('id', fixit.Id);
 
 		return this._osteRequest('/api/fixit', 'DELETE', formData);
+	}
+	static markAsDone(fixit) {
+		let form = new FormData();
+		form.append('id', fixit.Id);
+		form.append('title', fixit.Title);
+		form.append('description', fixit.Description);
+		form.append('done', true);
+
+		return this._osteRequest('/api/fixit', 'PUT', form, true);
 	}
 }

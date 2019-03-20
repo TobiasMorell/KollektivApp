@@ -2,13 +2,13 @@ import { Component } from 'preact';
 import Card from 'preact-material-components/Card';
 import style from './style.css';
 
-export default class CookingCard extends Component {
+export default class FixCard extends Component {
 
 	toggleCollapse = e => {
 		this.setState({ expanded: !this.state.expanded });
 	};
 
-	render({ fixit, className, openEditMenu, deleteItem }) {
+	render({ fixit, className, openEditMenu, deleteItem, markDone }) {
 		return (
 			<Card className={className}>
 				<Card.Media className="card-media" >
@@ -22,9 +22,10 @@ export default class CookingCard extends Component {
 						{fixit.Description}
 					</div>
 				</div>
-				<Card.Actions>
-					<Card.ActionIcons>
+				<Card.Actions style={{ overflow: 'hidden' }}>
+					<Card.ActionIcons >
 						<Card.ActionIcon onClick={this.toggleCollapse}>{this.state.expanded ? 'expand_less' : 'expand_more'}</Card.ActionIcon>
+						<Card.ActionIcon className={fixit.Done ? style.done : ''} onClick={e => markDone(fixit)}>check</Card.ActionIcon>
 						<Card.ActionIcon onClick={e => openEditMenu(fixit)}>edit</Card.ActionIcon>
 						<Card.ActionIcon onClick={e => deleteItem(fixit)}>delete</Card.ActionIcon>
 					</Card.ActionIcons>

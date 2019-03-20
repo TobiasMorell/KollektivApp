@@ -79,7 +79,6 @@ html, body {
     position: absolute;
     top: 56px;
     bottom: 0;
-    overflow: hidden;
 }
 
 .mdc-select {
@@ -145,10 +144,6 @@ html, body {
     .mdc-card {
         margin: 16px auto;
         max-width: 60%
-    }
-
-    #app {
-        overflow: hidden;
     }
 
     .installation-prompt {

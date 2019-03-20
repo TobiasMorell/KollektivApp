@@ -95,6 +95,36 @@
     max-height: 1000%;
 }
 
+.done {
+    color: #2cff4a !important;
+    font-weight: bold;
+    cursor: default;
+    -webkit-transition: color 0.6s;
+    -moz-transition: color 0.6s;
+    -ms-transition: color 0.6s;
+    -o-transition: color 0.6s;
+    transition: color 0.6s;
+    animation: swell 0.6s ease-in;
+}
+
+.imageEditContainer {
+    max-height: 300px
+}
+
+@keyframes swell {
+    0% {
+        font-size: 1em;
+    }
+    50% {
+        font-size: 1.6em;
+        padding: 0 12px;
+    }
+    100% {
+        font-size: 1em;
+        padding: 12px;
+    }
+}
+
 @media(min-width: 1024px) {
     .fabLowerRight {
         bottom: 1.5rem;
@@ -121,6 +151,10 @@
         display: inline-block;
         vertical-align: top;
         margin-left: 2%;
+    }
+
+    .imageEditContainer {
+        max-height: 500px;
     }
 }
 

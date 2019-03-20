@@ -7,6 +7,22 @@
 	max-width: 300px;
 }
 
+.dateList {
+	list-style: none;
+	margin: 0;
+	padding: 8px;
+}
+
+.dateList span:first-child {
+	width: auto;
+	display: block;
+	font-weight: bold;
+}
+
+.dateList li:not(:first-child) {
+	margin-top: 8px;
+}
+
 @media (min-width: 1024px) {
 	.cardHeader {
 		padding: 16px;
@@ -14,5 +30,14 @@
 
 	.cardBody {
 		padding: 16px;
+	}
+
+	.dateList span:first-child {
+		display: inline-block;
+		width: 20%;
+	}
+
+	.dateList li:not(:first-child) {
+		margin-top: 0;
 	}
 }
