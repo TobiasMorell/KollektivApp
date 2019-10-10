@@ -6,7 +6,7 @@ import style from './style.css';
 
 export default class NotFound extends Component {
 	goHome = e => {
-		route('/osteklokken/home', true);
+		route('/', true);
 	};
 
 	render() {

@@ -5,7 +5,7 @@
   "license": "beerware",
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
-    "build": "preact build -p --clean --service-worker",
+    "build": "preact build -p --service-worker",
     "serve": "preact build && preact serve",
     "dev": "preact watch",
     "lint": "eslint src"

@@ -49,7 +49,7 @@ export default class Backend {
 		}
 		else if (res.status === 401) {
 			Backend._clearSession();
-			route('/osteklokken/login', true);
+			route('/', true);
 		}
 		else {
 			let error = await res.text();
@@ -132,17 +132,29 @@ export default class Backend {
 	static getMenuSchedule() {
 		return this._osteRequest('/api/cooking', 'GET', null, true);
 	}
-	static addMenuSchedule(shoppingListForm) {
-		return this._osteRequest('/api/cooking', 'POST', shoppingListForm, true);
+	static addMenuSchedule(menu) {
+		return this._osteRequest('/api/cooking', 'POST', menu, true);
 	}
-	static updateMenuSchedule(updateItemForm) {
-		return this._osteRequest('/api/cooking', 'PUT', updateItemForm, true);
+	static updateMenuSchedule(menu) {
+		return this._osteRequest('/api/cooking', 'PUT', menu, true);
 	}
 	static deleteMenuSchedule(item) {
 		let formData = new FormData();
 		formData.append('week', item.Week);
 
 		return this._osteRequest('/api/cooking', 'DELETE', formData);
+	}
+	static attendMeal(meal) {
+		let formData = new FormData();
+		formData.append('week', meal.Week);
+
+		return this._osteRequest('/api/cooking/participate', 'PUT', formData);
+	}
+	static cancelAttendanceOnMeal(meal) {
+		let formData = new FormData();
+		formData.append('week', meal.Week);
+
+		return this._osteRequest('/api/cooking/participate', 'DELETE', formData);
 	}
 
 	static getKollexicon() {

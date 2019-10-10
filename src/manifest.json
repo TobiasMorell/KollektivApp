@@ -1,19 +1,19 @@
 {
   "name": "Kollektivet Osteklokken",
   "short_name": "Osteklokken",
-  "start_url": "/osteklokken/login",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff",
   "theme_color": "#ebc877",
   "icons": [
     {
-      "src": "/osteklokken/assets/icons/logo-192x192.png",
+      "src": "/assets/icons/logo-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/osteklokken/assets/icons/logo-512x512.png",
+      "src": "/assets/icons/logo-512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

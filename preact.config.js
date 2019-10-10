@@ -3,9 +3,6 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 export default (config, env, helpers) => {
 	asyncPlugin(config);
-	if (env.production) {
-		config.output.publicPath = '/osteklokken/';
-	}
 	config.plugins.push( new CopyWebpackPlugin([{ context: `${__dirname}/src/assets`, from: `*.*` }]) );
 
 	config.devServer = {
@@ -16,8 +13,7 @@ export default (config, env, helpers) => {
 		proxy: [
 			{
 				path: '/api/**',
-				target: 'http://localhost:5000/',
-				pathRewrite: { '^/osteklokken': '' }
+				target: 'http://localhost:5000/'
 			}
 		]
 	};

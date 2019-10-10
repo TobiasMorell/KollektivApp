@@ -21,75 +21,40 @@ export default class App extends Component {
 		toast('Ups! Der skete en fejl', error, 'error');
 	}
 
-	componentDidMount = () => {
-		/*
-		window.addEventListener('beforeinstallprompt', (e) => {
-			console.log(e);
-			// Prevent Chrome 67 and earlier from automatically showing the prompt
-			e.preventDefault();
-			// Stash the event so it can be triggered later.
-			this.deferredPrompt = e;
-			this.setState({ showInstall: true });
-		});*/
-	};
-
 	/** Gets fired when the route changes.
 	 *	@param {Object} e		"change" event from [preact-router](http://git.io/preact-router)
 	 *	@param {string} e.url	The newly routed URL
 	 */
 	handleRoute = e => {
-		if (e.url === '/osteklokken/')
-			route('/osteklokken/login', true);
 		if (!this.header)
 			return;
 
-		if (e.url === '/osteklokken/login')
+		//Check if we're on the login page, deactivate header if so
+		if (e.url === '/')
 			this.header.setState({ active: false });
-		else if (e.url !== '/osteklokken/')
+		else if (e.url !== '/')
 			this.header.setState({ active: true });
 	};
 
-	/*
-	installNatively = (e) => {
-		// hide our user interface that shows our A2HS button
-		this.setState({ showInstall: false });
-		// Show the prompt
-		this.deferredPrompt.prompt();
-		// Wait for the user to respond to the prompt
-		this.deferredPrompt.userChoice
-			.then((choiceResult) => {
-				if (choiceResult.outcome === 'accepted') {
-					console.log('User accepted the A2HS prompt');
-				}
-				else {
-					console.log('User dismissed the A2HS prompt');
-				}
-				this.deferredPrompt = null;
-			});
-
-	};*/
-
 	render() {
-
 		return (
 			<div id="app">
 				<Header ref={h => this.header = h} />
 				<Router onChange={this.handleRoute} basename >
-					<Home path="/osteklokken/home" />
-					<Login path="/osteklokken/login" />
+					<Login path="/" />
 					<AsyncRoute
-						path="/osteklokken/shopping"
+						path="/shopping"
 						getComponent={() => import('../routes/shopping').then(m => m.default)}
 					/>
 					<AsyncRoute
-						path="/osteklokken/cooking"
+						path="/cooking"
 						getComponent={() => import('../routes/cooking').then(m => m.default)}
 					/>
 					<AsyncRoute
-						path="/osteklokken/kollexicon"
+						path="/kollexicon"
 						getComponent={() => import('../routes/kollexicon').then(m => m.default)}
 					/>
-					<AsyncRoute path={'/osteklokken/pedel'}
+					<AsyncRoute path={'/pedel'}
 						getComponent={() => import('../routes/pedel').then(m => m.default)}
 					/>
 					<NotFound default />

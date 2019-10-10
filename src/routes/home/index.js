@@ -31,23 +31,23 @@ export default class Home extends Component {
 					<div className={style.cardBody}>
 						<ul className={style.dateList}>
 							<li>
-								<span>6. april</span>
-								<span>Tur i Zoo</span>
+								<span>24. juli</span>
+								<span>Tur i Fårup Sommerland</span>
 							</li>
 							<li>
-								<span>13. april</span>
+								<span>4. august</span>
+								<span>Byttedag</span>
+							</li>
+							<li>
+								<span>18. august</span>
 								<span>Ornedag</span>
 							</li>
 							<li>
-								<span>21.-22. april</span>
-								<span>Skovtur i Jakobs hytte</span>
-							</li>
-							<li>
-								<span>4. maj</span>
-								<span>Tour de Chambre</span>
-							</li>
-							<li>
 								<span>7. september</span>
+								<span>Renes 25 års fødselsdag</span>
+							</li>
+							<li>
+								<span>14. september</span>
 								<span>Osteklokkens 5 års fødselsdag</span>
 							</li>
 						</ul>

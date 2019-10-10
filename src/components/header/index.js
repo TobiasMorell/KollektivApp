@@ -26,14 +26,14 @@ export default class Header extends Component {
 	linkTo = path => () => {
 		this.currentTab = path.replace('/', '');
 
-		route('/osteklokken' + path);
+		route(path);
 		this.closeDrawer();
 	};
 
 	componentDidMount() {
 		let s = Backend.getSessionDetails();
 		if (!s) {
-			route('/osteklokken/login');
+			route('/', true);
 		}
 	}
 
@@ -41,13 +41,12 @@ export default class Header extends Component {
 		this.toggleDropdown();
 		Backend.logout().then(r => {
 			localStorage.removeItem('session');
-			route('/osteklokken/login');
+			route('/', true);
 		}).catch(e => {
 			toast('Kunne ikke logge ud', e, 'error');
 		});
 	};
 
-	goHome = this.linkTo('/home');
 	goToShopping = this.linkTo('/shopping');
 	goToCooking = this.linkTo('/cooking');
 	goToKollexicon = this.linkTo('/kollexicon');
@@ -66,7 +65,6 @@ export default class Header extends Component {
 	OsteDrawer = ({ }) => (
 		<Drawer modal ref={this.drawerRef}>
 			<Drawer.DrawerContent>
-				<this.DrawerItem onSelected={this.goHome} icon="home" text="Nyheder" selected />
 				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste"  />
 				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning"  />
 				<this.DrawerItem onSelected={this.goToKollexicon} icon="gavel" text="Kolleksikon"  />
@@ -91,7 +89,7 @@ export default class Header extends Component {
 						</Toolbar.Section>
 						<Toolbar.Section align-end shrink-to-fit >
 							<div className={style.avatarContainer} onClick={this.toggleDropdown}>
-								<img className={style.avatar} src={s ? s.avatar : '/osteklokken/assets/avatars/profile.png'} />
+								<img className={style.avatar} src={s ? s.avatar : '/assets/avatars/profile.png'} />
 							</div>
 						</Toolbar.Section>
 					</Toolbar.Row>

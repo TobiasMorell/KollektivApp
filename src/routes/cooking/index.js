@@ -24,7 +24,7 @@ function weekdayToIndex (weekday) {
 
 export default class Cooking extends Component {
 	state = {
-		fixitItems: []
+		schedule: []
 	};
 	domIds = {
 		dialogTitleId: 'menu-dialog-name',
@@ -34,7 +34,7 @@ export default class Cooking extends Component {
 
 	componentWillMount() {
 		Backend.getMenuSchedule().then(r => {
-			this.setState({ fixitItems: r });
+			this.setState({ schedule: r });
 		}).catch(e => {
 			toast('Madplanen kunne ikke hentes', e, 'error');
 		});
@@ -43,7 +43,6 @@ export default class Cooking extends Component {
 	openEditMenu = (menu) => (e) => {
 		this.setState({
 			addNewItem: false,
-			newChef: menu.Chef,
 			newMeal: menu.Meal,
 			newWeek: menu.Week,
 			newWeekday: menu.Day,
@@ -73,15 +72,13 @@ export default class Cooking extends Component {
 			newMeal: '',
 			newChef: '',
 			newWeek: '',
-			newWeekday: '',
-			selectedIndex: 0
+			newWeekday: ''
 		});
 	};
 
 	confirmMenuDialog = (e) => {
 		//TODO: Prevent dialog from hiding if errors
 		let fd = new FormData();
-		fd.append('chef', this.state.newChef);
 		fd.append('meal', this.state.newMeal);
 		fd.append('week', this.state.newWeek);
 		fd.append('weekday', this.state.newWeekday);
@@ -90,7 +87,7 @@ export default class Cooking extends Component {
 			Backend.addMenuSchedule(fd)
 				.then(r => {
 					this.clearItemDialog();
-					this.setState({ fixitItems: this.state.schedule.concat(r), editItem: undefined });
+					this.setState({ schedule: this.state.schedule.concat(r), editItem: undefined });
 				}).catch(e => {
 					toast('Kunne ikke tilføje madplan', e, 'error');
 				});
@@ -99,7 +96,7 @@ export default class Cooking extends Component {
 			Backend.updateMenuSchedule(fd)
 				.then(r => {
 					let newItems = this.state.schedule.filter(i => i.Week !== this.state.newWeek).concat(r).sort((c1, c2) => c1.Week - c2.Week);
-					this.setState({ fixitItems: newItems, editItem: undefined });
+					this.setState({ schedule: newItems, editItem: undefined });
 					this.clearItemDialog();
 				}).catch(e => {
 					toast('Kunne ikke opdatere madplan', e, 'error');
@@ -121,6 +118,20 @@ export default class Cooking extends Component {
 		}
 	};
 
+	attend = (meal) => e => {
+		Backend.attendMeal(meal).then(r => {
+			toast(r);
+		}).catch(e => {
+			toast(e, undefined, 'error');
+		});
+	};
+
+	cancelAttendance = (meal) => e => {
+		Backend.cancelAttendanceOnMeal(meal).then(toast).catch(e => {
+			toast(e, undefined, 'error');
+		});
+	};
+
 	render() {
 		return (
 			<div className={['appContainer', style.scollable].join(' ')}>
@@ -128,20 +139,18 @@ export default class Cooking extends Component {
 					if (m === this.state.upForDeletion){
 						let item =  <CookingCard className={style.delete} menu={m} />;
 						setTimeout(() => {
-							this.setState({ fixitItems: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
+							this.setState({ schedule: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
 						}, 510);
 						return item;
 					}
-					return <CookingCard menu={m} openEditMenu={this.openEditMenu(m)} deleteItem={this.deleteItem(m)} />;
+					return (<CookingCard menu={m} openEditMenu={this.openEditMenu(m)} deleteItem={this.deleteItem(m)}
+						session={Backend.getSessionDetails()} onAttend={this.attend(m)} onCancel={this.cancelAttendance(m)}
+					        />);
 				})}
 
 				<Dialog onAccept={this.confirmMenuDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
 					<Dialog.Header>{this.state.addNewItem ? 'Tilføj en madplan' : 'Rediger en madplan'}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
-						<TextField className={style.wideInputField} id={this.domIds.dialogNameId}
-							onInput={linkState(this, 'newChef')} value={this.state.newChef} label="Lavet af"
-							onkeydown={this.focusOnEnter(this.domIds.dialogMealId)} required
-						/>
 						<TextField className={style.wideInputField} id={this.domIds.dialogMealId}
 							onInput={linkState(this, 'newMeal')} value={this.state.newMeal} label="Ret"
 							onkeydown={this.focusOnEnter(this.domIds.dialogWeek)} required
