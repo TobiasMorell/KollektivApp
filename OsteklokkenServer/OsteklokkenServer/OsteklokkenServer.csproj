@@ -14,7 +14,9 @@
     <PackageReference Include="LiteDB" Version="4.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
-    <PackageReference Include="Red.CookieSessions" Version="2.2.0" />
-    <PackageReference Include="RHttpServer" Version="3.5.2" />
+    <PackageReference Include="Red.CookieSessions" Version="4.1.0" />
+    <PackageReference Include="Red.CookieSessions.LiteDBStore" Version="1.2.0" />
+    <PackageReference Include="Red.Validation" Version="1.0.0" />
+    <PackageReference Include="RHttpServer" Version="4.0.2" />
   </ItemGroup>
 </Project>
