@@ -1,0 +1,8 @@
+﻿version: '3.2'
+
+services:
+
+  kollektiv-backend:
+    build: backend
+    ports:
+      - "5000:5000"
