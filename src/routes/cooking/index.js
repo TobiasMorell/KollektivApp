@@ -142,7 +142,7 @@ export default class Cooking extends Component {
 		return (
 			<div className={['appContainer', style.scrollable].join(' ')}>
 				<div className={style.cookingList}>
-					{this.state.schedule.map(m => {
+					{state.schedule.map(m => {
 						if (m === state.upForDeletion){
 							let item =  <CookingCard className={style.delete} menu={m} />;
 							setTimeout(() => {
