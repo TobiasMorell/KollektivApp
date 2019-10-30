@@ -138,12 +138,12 @@ export default class Cooking extends Component {
 		});
 	};
 
-	render() {
+	render(props, state) {
 		return (
 			<div className={['appContainer', style.scrollable].join(' ')}>
 				<div className={style.cookingList}>
 					{this.state.schedule.map(m => {
-						if (m === this.state.upForDeletion){
+						if (m === state.upForDeletion){
 							let item =  <CookingCard className={style.delete} menu={m} />;
 							setTimeout(() => {
 								this.setState({ schedule: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
@@ -157,19 +157,19 @@ export default class Cooking extends Component {
 				</div>
 
 				<Dialog onAccept={this.confirmMenuDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
-					<Dialog.Header>{this.state.addNewItem ? 'Tilføj en madplan' : 'Rediger en madplan'}</Dialog.Header>
+					<Dialog.Header>{state.addNewItem ? 'Tilføj en madplan' : 'Rediger en madplan'}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
 						<TextField className={style.wideInputField} id={this.domIds.dialogMealId}
-							onInput={linkState(this, 'newMeal')} value={this.state.newMeal} label="Ret"
+							onInput={linkState(this, 'newMeal')} value={state.newMeal} label="Ret"
 							onkeydown={this.focusOnEnter(this.domIds.dialogWeek)} required
 						/>
 						<TextField className={style.wideInputField} type="number" id={this.domIds.dialogWeek}
-							onInput={linkState(this, 'newWeek')} value={this.state.newWeek} label="Uge Nummer"
+							onInput={linkState(this, 'newWeek')} value={state.newWeek} label="Uge Nummer"
 							onkeydown={this.submitOnEnter} required
 						/>
 						<div className={style.wideInputField}>
 							<Select hintText="Vælg en ugedag"
-								selectedIndex={this.state.chosenIndex}
+								selectedIndex={state.chosenIndex}
 								onChange={e => {
 									this.setState({ chosenIndex: e.target.selectedIndex, newWeekday: e.target.value });
 								}}

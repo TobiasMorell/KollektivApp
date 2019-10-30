@@ -148,7 +148,7 @@ export default class Shopping extends Component {
 		}
 	};
 
-	render() {
+	render(props, state) {
 		return (
 			<div className={['appContainer', style.scrollable].join(' ')}>
 				<h2 className={style.title}>Indkøbsliste</h2>

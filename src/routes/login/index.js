@@ -130,13 +130,13 @@ export default class Login extends Component {
 		);
 	}
 
-	render() {
+	render(props, state) {
 		let form, cardDescription;
-		if (this.state.action === 'forgot') {
+		if (state.action === 'forgot') {
 			form = this.osteForm(this.doNewPassword, 'Nyt kodeord', 'Nulstil');
 			cardDescription = <div class="mdc-typography--caption">Opdater kodeordet til din bruger.</div>;
 		}
-		else if (this.state.action === 'register') {
+		else if (state.action === 'register') {
 			form = this.osteForm(this.doRegister, 'Kodeord', 'Registrer');
 			cardDescription = <div class="mdc-typography--caption">Registrer en ny bruger - angiv dit navn som det står på Facebook.</div>;
 		}
