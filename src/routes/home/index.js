@@ -7,7 +7,7 @@ import pedel from '../../assets/pedelliste.png';
 import Typography from 'preact-material-components/Typography';
 
 export default class Home extends Component {
-	render() {
+	render(props, state) {
 		return (
 			<div class="appContainer">
 				<Card>

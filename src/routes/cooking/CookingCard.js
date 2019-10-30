@@ -21,7 +21,7 @@ export default class CookingCard extends Component {
 		);
 	};
 
-	render({ menu, className, openEditMenu, deleteItem, onAttend, onCancel, session }) {
+	render({ menu, className, openEditMenu, deleteItem, onAttend, onCancel, session }, state) {
 		return (
 			<Card className={className}>
 				<div>

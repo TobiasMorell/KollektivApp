@@ -9,7 +9,7 @@ export default class NotFound extends Component {
 		route('/', true);
 	};
 
-	render() {
+	render(props, state) {
 		return (
 			<div className={style.home}>
 				<Card>

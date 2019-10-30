@@ -36,7 +36,7 @@ export default class App extends Component {
 			this.header.setState({ active: true });
 	};
 
-	render() {
+	render(props, state) {
 		return (
 			<div id="app">
 				<Header ref={h => this.header = h} />

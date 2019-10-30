@@ -72,8 +72,8 @@ export default class Header extends Component {
 			</Drawer.DrawerContent>
 		</Drawer>);
 
-	render({ displayed }) {
-		if (!this.state.active)
+	render({ displayed }, state) {
+		if (!state.active)
 			return;
 		let s = Backend.getSessionDetails();
 
@@ -94,7 +94,7 @@ export default class Header extends Component {
 						</Toolbar.Section>
 					</Toolbar.Row>
 				</Toolbar>
-				<div className={[style.settingsDropdown, this.state.dropdownShown ? style.shown : ''].join(' ')}>
+				<div className={[style.settingsDropdown, state.dropdownShown ? style.shown : ''].join(' ')}>
 					<div className={style.cropText}>{s ? s.name : 'Dit navn'}</div>
 					<div className={style.clickable} onClick={this.logout}>Logout</div>
 				</div>

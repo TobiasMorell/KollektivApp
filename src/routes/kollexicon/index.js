@@ -128,7 +128,7 @@ export default class Shopping extends Component {
 			</Dialog.Footer>
 		</Dialog>);
 
-	render() {
+	render(props, state) {
 		let rules = this._ruleList();
 
 		return (

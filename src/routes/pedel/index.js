@@ -166,7 +166,7 @@ export default class Cooking extends Component {
 		}
 	};
 
-	render() {
+	render(props, state) {
 		return (
 			<div className={['appContainer', style.scrollable].join(' ')}>
 				{this.state.fixitItems.map(f => {
