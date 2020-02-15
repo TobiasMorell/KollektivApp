@@ -26,10 +26,10 @@ namespace OsteklokkenServer.Routes
                     return await res.SendString("'name' or 'category' is missing.", status: HttpStatusCode.BadRequest);
                 }
 
-                var items = shoppingItems.Find(item => item.Name == form["name"]);
+                var items = shoppingItems.Find(item => item.Name.Equals(form["name"]));
                 if (items.Any())
                 {
-                    return await res.SendString("Duplicate item cannot be added", status: HttpStatusCode.BadRequest);
+                    return await res.SendString("Denne vare findes allerede på listen", status: HttpStatusCode.BadRequest);
                 }
 
                 var i = new ShoppingItem()

@@ -67,7 +67,7 @@ export default class Shopping extends Component {
 			let wares = this.state.items.filter(i => i.Category === c);
 
 			list.push(
-				<div>
+				<div className={style.shoppingListContainer}>
 					<label>{c}</label>
 					<List class={style.revertMargin} Avatar>
 						{this.createListItems(c, wares)}

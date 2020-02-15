@@ -17,6 +17,10 @@
     position: absolute;
 }
 
+.shoppingListContainer {
+    padding-bottom: 60px;
+}
+
 .shoppingListItem {
     background-color: white;
     border-top: 1px solid lightgray;

@@ -120,14 +120,20 @@ export default class Cooking extends Component {
 
 	attend = (meal) => e => {
 		Backend.attendMeal(meal).then(r => {
-			toast(r);
+			// Remove the old instane of the week in the schedule, add the new and sort by week
+			let s = this.state.schedule.filter(c => c.Week !== r.Week).concat(r).sort((c1, c2) => c1.Week - c2.Week);
+			this.setState({ schedule: s });
 		}).catch(e => {
 			toast(e, undefined, 'error');
 		});
 	};
 
 	cancelAttendance = (meal) => e => {
-		Backend.cancelAttendanceOnMeal(meal).then(toast).catch(e => {
+		Backend.cancelAttendanceOnMeal(meal).then(r => {
+			// Remove the old instane of the week in the schedule, add the new and sort by week
+			let s = this.state.schedule.filter(c => c.Week !== r.Week).concat(r).sort((c1, c2) => c1.Week - c2.Week);
+			this.setState({ schedule: s });
+		}).catch(e => {
 			toast(e, undefined, 'error');
 		});
 	};

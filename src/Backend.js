@@ -148,13 +148,13 @@ export default class Backend {
 		let formData = new FormData();
 		formData.append('week', meal.Week);
 
-		return this._osteRequest('/api/cooking/participate', 'PUT', formData);
+		return this._osteRequest('/api/cooking/participate', 'PUT', formData, true);
 	}
 	static cancelAttendanceOnMeal(meal) {
 		let formData = new FormData();
 		formData.append('week', meal.Week);
 
-		return this._osteRequest('/api/cooking/participate', 'DELETE', formData);
+		return this._osteRequest('/api/cooking/participate', 'DELETE', formData, true);
 	}
 
 	static getKollexicon() {

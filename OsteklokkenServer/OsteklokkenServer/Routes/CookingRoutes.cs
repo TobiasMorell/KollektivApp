@@ -86,6 +86,7 @@ namespace OsteklokkenServer.Routes
             });
             router.Put("/participate", Utils.Authed, async (req, res) =>
             {
+                // Validate that a user is logged in
                 var user = req.GetData<OsteSession>().Name;
                 if (string.IsNullOrEmpty(user))
                 {
@@ -93,12 +94,22 @@ namespace OsteklokkenServer.Routes
                         status: HttpStatusCode.BadRequest);
                 }
 
+                Console.WriteLine(user);
+
+                // Get the week number of the cooking session the user wishes to participate in
                 var form = await req.GetFormDataAsync();
-                if (!Cooking.TryParseForm(form, out var cooking, out var error))
+                if (!form.ContainsKey("week"))
                 {
-                    return await res.SendString(error, status: HttpStatusCode.BadRequest);
+                    return await res.SendString("Could not find field 'week'", status: HttpStatusCode.BadRequest);
                 }
-                    
+                var week = int.Parse(form["week"]);
+
+                // Find the cooking session
+                var cooking = cookingSchedule.FindOne(i => i.Week == week);
+
+                Console.WriteLine(cooking.ToString());
+
+                // Check if the user has already subscribed, return error if so
                 if (cooking.Participants == null)
                     cooking.Participants = new List<string>();
                 if (cooking.Participants.Contains(user))
@@ -106,12 +117,22 @@ namespace OsteklokkenServer.Routes
                     return await res.SendString("Du deltager allerede i det måltid");
                 }
 
+                // Add the user and return OK
                 cooking.Participants.Add(user);
                 cookingSchedule.Update(cooking);
-                return await res.SendString("Du deltager nu i måltidet");
+                var dayName = Utils.DateTimeFormat.GetDayName(cooking.Day);
+                return await res.SendJson(new
+                {
+                    Day = char.ToUpper(dayName[0]) + dayName.Substring(1),
+                    cooking.Week,
+                    cooking.Chef,
+                    cooking.Meal,
+                    cooking.Participants
+                });
             });
             router.Delete("/participate", Utils.Authed, async (req, res) =>
             {
+                // Validate that a user is logged in
                 var user = req.GetData<OsteSession>().Name;
                 if (string.IsNullOrEmpty(user))
                 {
@@ -119,17 +140,23 @@ namespace OsteklokkenServer.Routes
                         status: HttpStatusCode.BadRequest);
                 }
 
+                // Get the week number of the cooking session and find the session in the database
                 var form = await req.GetFormDataAsync();
-                if (!Cooking.TryParseForm(form, out var cooking, out var error))
+                if (!form.ContainsKey("week"))
                 {
-                    return await res.SendString(error, status: HttpStatusCode.BadRequest);
+                    return await res.SendString("Could not find field 'week'", status: HttpStatusCode.BadRequest);
                 }
 
+                var week = int.Parse(form["week"]);
+                var cooking = cookingSchedule.FindOne(c => c.Week == week);
+
+                // Check if the user is the chef, return error if so, as the Chef must participate in the session
                 if (cooking.Chef == user)
                 {
                     return await res.SendString("Du skal deltage i dit eget måltid", status: HttpStatusCode.BadRequest);
                 }
                 
+                // Check if the user is participating, return error if not
                 if (cooking.Participants == null)
                     cooking.Participants = new List<string>();
                 if (!cooking.Participants.Contains(user))
@@ -138,6 +165,7 @@ namespace OsteklokkenServer.Routes
                         status: HttpStatusCode.BadRequest);
                 }
 
+                // Now remote the user, and save the changes to the database.
                 cooking.Participants.Remove(user);
                 cookingSchedule.Update(cooking);
                 var dayName = Utils.DateTimeFormat.GetDayName(cooking.Day);
