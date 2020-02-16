@@ -94,8 +94,6 @@ namespace OsteklokkenServer.Routes
                         status: HttpStatusCode.BadRequest);
                 }
 
-                Console.WriteLine(user);
-
                 // Get the week number of the cooking session the user wishes to participate in
                 var form = await req.GetFormDataAsync();
                 if (!form.ContainsKey("week"))
@@ -106,8 +104,6 @@ namespace OsteklokkenServer.Routes
 
                 // Find the cooking session
                 var cooking = cookingSchedule.FindOne(i => i.Week == week);
-
-                Console.WriteLine(cooking.ToString());
 
                 // Check if the user has already subscribed, return error if so
                 if (cooking.Participants == null)

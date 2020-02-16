@@ -26,7 +26,18 @@ namespace OsteklokkenServer
     {
         static async Task Main(string[] args)
         {
-            var server = new RedHttpServer(5000, "public");
+            int port;
+            try
+            {
+                var index = args.ToList().IndexOf("--port");
+                port = int.Parse(args[index + 1]);
+            }
+            catch
+            {
+                port = 5000;
+            }
+            
+            var server = new RedHttpServer(port, "public");
             var db = new LiteDatabase("osteklokken.litedb");
             
             if (!Directory.Exists("public"))

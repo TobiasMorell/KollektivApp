@@ -20,7 +20,7 @@ namespace OsteklokkenServer.Routes
 
                 if (!form.ContainsKey("username") || !form.ContainsKey("password"))
                 {
-                    return await res.SendString("Username or password missing", status: HttpStatusCode.BadRequest);
+                    return await res.SendString("Fields 'username' or 'password' missing", status: HttpStatusCode.BadRequest);
                 }
 
                 string username = form["username"];
