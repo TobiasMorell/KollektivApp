@@ -140,19 +140,21 @@ export default class Cooking extends Component {
 
 	render() {
 		return (
-			<div className={['appContainer', style.scollable].join(' ')}>
-				{this.state.schedule.map(m => {
-					if (m === this.state.upForDeletion){
-						let item =  <CookingCard className={style.delete} menu={m} />;
-						setTimeout(() => {
-							this.setState({ schedule: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
-						}, 510);
-						return item;
-					}
-					return (<CookingCard menu={m} openEditMenu={this.openEditMenu(m)} deleteItem={this.deleteItem(m)}
-						session={Backend.getSessionDetails()} onAttend={this.attend(m)} onCancel={this.cancelAttendance(m)}
-					        />);
-				})}
+			<div className={['appContainer', style.scrollable].join(' ')}>
+				<div className={style.cookingList}>
+					{this.state.schedule.map(m => {
+						if (m === this.state.upForDeletion){
+							let item =  <CookingCard className={style.delete} menu={m} />;
+							setTimeout(() => {
+								this.setState({ schedule: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
+							}, 510);
+							return item;
+						}
+						return (<CookingCard menu={m} openEditMenu={this.openEditMenu(m)} deleteItem={this.deleteItem(m)}
+							session={Backend.getSessionDetails()} onAttend={this.attend(m)} onCancel={this.cancelAttendance(m)}
+						        />);
+					})}
+				</div>
 
 				<Dialog onAccept={this.confirmMenuDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
 					<Dialog.Header>{this.state.addNewItem ? 'Tilføj en madplan' : 'Rediger en madplan'}</Dialog.Header>
