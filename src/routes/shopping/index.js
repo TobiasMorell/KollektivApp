@@ -67,7 +67,7 @@ export default class Shopping extends Component {
 			let wares = this.state.items.filter(i => i.Category === c);
 
 			list.push(
-				<div className={style.shoppingListContainer}>
+				<div>
 					<label>{c}</label>
 					<List class={style.revertMargin} Avatar>
 						{this.createListItems(c, wares)}
@@ -156,7 +156,9 @@ export default class Shopping extends Component {
 					<div><Icon>check_box_outline_blank</Icon><span className={style.alignIconCenter}>: Varen er ikke tilføjet til listen.</span></div>
 					<div><Icon>check_box</Icon><span className={style.alignIconCenter}>: Varen er tilføjet til listen.</span></div>
 				</div>
-				{this.createShoppingList()}
+				<div className={style.shoppingListContainer}>
+					{this.createShoppingList()}
+				</div>
 
 				<Dialog onAccept={this.confirmItemDialog} onCancel={this.clearItemDialog} ref={addItemDlg => this.addItemDlg = addItemDlg} >
 					<Dialog.Header>{this.state.addNewItem ? 'Tilføj til indkøbslisten' : 'Rediger indkøbslistepunkt'}</Dialog.Header>
