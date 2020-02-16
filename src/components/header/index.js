@@ -65,10 +65,10 @@ export default class Header extends Component {
 	OsteDrawer = ({ }) => (
 		<Drawer modal ref={this.drawerRef}>
 			<Drawer.DrawerContent>
-				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste"  />
-				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning"  />
-				<this.DrawerItem onSelected={this.goToKollexicon} icon="gavel" text="Kolleksikon"  />
-				<this.DrawerItem onSelected={this.goToFixit} icon="build" text="Pedelliste"  />
+				<this.DrawerItem onSelected={this.goToShopping} icon="shopping_cart" text="Indkøbsliste"  selected={window.location.pathname.includes('/shopping')} />
+				<this.DrawerItem onSelected={this.goToCooking} icon="fastfood" text="Madlavning" selected={window.location.pathname.includes('/cooking')} />
+				<this.DrawerItem onSelected={this.goToKollexicon} icon="gavel" text="Kolleksikon" selected={window.location.pathname.includes('/kollexicon')} />
+				<this.DrawerItem onSelected={this.goToFixit} icon="build" text="Pedelliste" selected={window.location.pathname.includes('/pedel')} />
 			</Drawer.DrawerContent>
 		</Drawer>);
 
