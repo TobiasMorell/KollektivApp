@@ -33,8 +33,8 @@
   "dependencies": {
     "cropperjs": "^1.5.1",
     "linkstate": "^1.1.1",
+    "liquid-route": "^1.1.0",
     "preact": "^8.4.2",
-    "preact-async-route": "^2.2.1",
     "preact-cli-plugin-async": "^2.0.0",
     "preact-compat": "^3.17.0",
     "preact-i18n": "^1.2.2",

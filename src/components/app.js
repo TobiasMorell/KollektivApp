@@ -4,7 +4,7 @@ import Header from './header';
 import Home from '../routes/home';
 import Login from '../routes/login';
 import NotFound from '../routes/404';
-import AsyncRoute from 'preact-async-route';
+import LiquidRoute, { FadeAnimation, PopAnimation } from 'liquid-route';
 import toast from './toast';
 import '../style/index.css';
 import '../style/toastr.css';
@@ -41,20 +41,25 @@ export default class App extends Component {
 			<div id="app">
 				<Header ref={h => this.header = h} />
 				<Router onChange={this.handleRoute} basename >
-					<Login path="/" />
-					<AsyncRoute
+					<LiquidRoute path="/" animator={PopAnimation} component={Login}/>
+					<LiquidRoute
 						path="/shopping"
+						animator={FadeAnimation}
 						getComponent={() => import('../routes/shopping').then(m => m.default)}
 					/>
-					<AsyncRoute
+					<LiquidRoute
 						path="/cooking"
+						animator={FadeAnimation}
 						getComponent={() => import('../routes/cooking').then(m => m.default)}
 					/>
-					<AsyncRoute
+					<LiquidRoute
 						path="/kollexicon"
+						animator={FadeAnimation}
 						getComponent={() => import('../routes/kollexicon').then(m => m.default)}
 					/>
-					<AsyncRoute path={'/pedel'}
+					<LiquidRoute
+						path={'/pedel'}
+						animator={FadeAnimation}
 						getComponent={() => import('../routes/pedel').then(m => m.default)}
 					/>
 					<NotFound default />
