@@ -30,11 +30,11 @@ export default class Login extends Component {
 
 	doLogin = (e) => {
 		e.preventDefault();
-		let loginForm = new FormData(e.srcElement);
+		let loginForm = new FormData(e.target);
 		loginForm.set('username', loginForm.get('username').toLowerCase());
 
 		Backend.login(loginForm).then((r) => {
-			e.srcElement.reset();
+			e.target.reset();
 			route('/shopping', true);
 		}).catch(e => {
 			console.log('Failed to log in', e);
@@ -44,7 +44,7 @@ export default class Login extends Component {
 
 	doRegister = e => {
 		e.preventDefault();
-		let registerForm = new FormData(e.srcElement);
+		let registerForm = new FormData(e.target);
 		registerForm.set('username', registerForm.get('username').toLowerCase());
 
 		Backend.register(registerForm).then(r => {
@@ -58,7 +58,7 @@ export default class Login extends Component {
 
 	doNewPassword = e => {
 		e.preventDefault();
-		let newPasswordForm = new FormData(e.srcElement);
+		let newPasswordForm = new FormData(e.target);
 		newPasswordForm.set('username', newPasswordForm.get('username').toLowerCase());
 
 		Backend.updatePassword(newPasswordForm).then(r => {
