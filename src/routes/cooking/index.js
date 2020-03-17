@@ -146,7 +146,7 @@ export default class Cooking extends Component {
 						if (m === state.upForDeletion){
 							let item =  <CookingCard className={style.delete} menu={m} />;
 							setTimeout(() => {
-								this.setState({ schedule: this.state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
+								this.setState({ schedule: state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
 							}, 510);
 							return item;
 						}
