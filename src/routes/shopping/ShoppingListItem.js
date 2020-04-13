@@ -4,6 +4,7 @@ import style from './style.css';
 import Icon from 'preact-material-components/Icon';
 import 'preact-material-components/Icon/style.css';
 import Backend from '../../Backend';
+import toast from '../../components/toast';
 
 const checkboxIcons = {
 	checked: 'check_box',
@@ -19,10 +20,10 @@ export default class ShoppingListItem extends Component {
 	editTimer = null;
 
 	toggleListItemTick = (e) => {
-		let active = !this.state.item.Active;
-		Backend.setShoppingItemState(this.state.item, active).then(i => {
-			this.state.item.Active = active;
-			this.setState({ item: this.state.item });
+		let active = !this.props.item.Active;
+		Backend.setShoppingItemState(this.props.item, active).then(i => {
+			this.props.item.Active = active;
+			this.setState({ item: this.props.item });
 		});
 	};
 
@@ -45,28 +46,23 @@ export default class ShoppingListItem extends Component {
 	openEdit = (e) => {
 		if (e)
 			e.stopPropagation();
-		this.onEditItem(this.state.item);
+		this.props.onEditItem(this.props.item);
 	};
 
 	removeFromList = (e) => {
 		e.stopPropagation();
-		Backend.deleteShoppingItem(this.state.item).then(() => {
-			this.onDelete(this.state.item);
+		Backend.deleteShoppingItem(this.props.item).then(() => {
+			this.props.onDelete(this.props.item);
 		}).catch(e => {
-			//App.Snackbar.MDComponent.show({message: e});
+			toast('Varen kunne ikke slettes', e.toString(), 'Snak med Tobias - måske er serveren offline');
+			console.error(e);
 		});
 	};
 
-	clickHandler = () => {
-		return /Mobi|Android/i.test(navigator.userAgent) ? undefined : this.toggleListItemTick;
-	};
+	clickHandler = () => /Mobi|Android/i.test(navigator.userAgent) ? undefined : this.toggleListItemTick;
 
-	render({ item, onEditItem, category, onDelete, className }) {
+	render({ item, onEditItem, category, onDelete, className }, { listItemIcon }, context) {
 		let checkBoxIcon = checkboxIcons.unchecked;
-		this.onEditItem = onEditItem;
-		this.onDelete = onDelete;
-		this.state.item = item;
-		this.state.category = category;
 		if (item.Active)
 			checkBoxIcon = checkboxIcons.checked;
 
@@ -74,8 +70,8 @@ export default class ShoppingListItem extends Component {
 			<List.Item className={[style.shoppingListItem, className].join(' ')} onClick={this.clickHandler()} ontouchstart={this.startEditTimer}
 				ontouchmove={this.abortEditTimer()} ontouchend={this.abortEditTimer(true)}
 			>
-				<List.ItemGraphic>{this.state.listItemIcon}</List.ItemGraphic>
-				<span>{this.state.item.Name}</span>
+				<List.ItemGraphic>{listItemIcon}</List.ItemGraphic>
+				<span>{item.Name}</span>
 				<span className={style.listEndCenter}>
 					<Icon className={style.checkbox}>{checkBoxIcon}</Icon>
 					<Icon className={[style.onlyDesktop, style.primaryOnHover].join(' ')} onClick={this.openEdit}>edit</Icon>

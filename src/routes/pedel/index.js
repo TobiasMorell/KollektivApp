@@ -12,11 +12,11 @@ import Button from 'preact-material-components/Button';
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.min.css';
 
-function lexSort(a, b) {
+const lexSort = (a, b) => {
 	if (a.Title < b.Title) return -1;
 	if (a.Title > b.Title) return 1;
 	return 0;
-}
+};
 
 export default class Cooking extends Component {
 	state = {

@@ -1,12 +1,13 @@
 import { h, Component } from 'preact';
-import { route, Router } from 'preact-router';
+import { Route, route, Router } from 'preact-router';
 import Header from './header';
-import Home from '../routes/home';
+import Shopping from '../routes/shopping';
 import Login from '../routes/login';
 import NotFound from '../routes/404';
 import toast from './toast';
 import '../style/index.css';
 import '../style/toastr.css';
+import LiquidRoute, { FadeAnimation, PopAnimation } from 'liquid-route';
 
 export default class App extends Component {
 	state = {
@@ -40,7 +41,7 @@ export default class App extends Component {
 					<Route
 						path="/shopping"
 						animator={FadeAnimation}
-						getComponent={() => import('../routes/shopping').then(m => m.default)}
+						component={Shopping}
 					/>
 					<LiquidRoute
 						path="/cooking"

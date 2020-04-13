@@ -11,6 +11,12 @@ import AutoCompleter from 'preact-material-autocompleter';
 import linkState from 'linkstate';
 import toast from '../../components/toast';
 
+const lexSort = (a, b) => {
+	if (a.Name.toLowerCase() < b.Name.toLowerCase()) return -1;
+	if (a.Name.toLowerCase() > b.Name.toLowerCase()) return 1;
+	return 0;
+};
+
 export default class Shopping extends Component {
 	state = {
 		items: null,
@@ -117,22 +123,16 @@ export default class Shopping extends Component {
 	};
 
 	createListItems(category, wares) {
-		let wareList = [];
-
-		for (const ware of wares) {
+		return wares.sort(lexSort).map(ware => {
 			if (ware === this.state.upForDeletion) {
 				let item =  <ShoppingListItem item={ware} className={style.delete} />;
 				setTimeout(() => {
 					this.setState({ items: this.state.items.filter(i => i.Id !== ware.Id), upForDeletion: undefined });
 				}, 810);
-				wareList.push(item);
+				return item;
 			}
-			else
-				wareList.push(
-					<ShoppingListItem item={ware} onEditItem={this.openEditMenu} category={category} onDelete={this.deleteItem} />
-				);
-		}
-		return wareList;
+			return <ShoppingListItem item={ware} onEditItem={this.openEditMenu} category={category} onDelete={this.deleteItem} />;
+		});
 	}
 
 	deleteItemMobile = e => {
