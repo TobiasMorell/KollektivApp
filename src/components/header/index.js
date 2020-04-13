@@ -72,8 +72,8 @@ export default class Header extends Component {
 			</Drawer.DrawerContent>
 		</Drawer>);
 
-	render({ displayed }, state) {
-		if (!state.active)
+	render({ displayed, active }, state) {
+		if (!active)
 			return;
 		let s = Backend.getSessionDetails();
 

@@ -4,13 +4,11 @@ import Header from './header';
 import Home from '../routes/home';
 import Login from '../routes/login';
 import NotFound from '../routes/404';
-import LiquidRoute, { FadeAnimation, PopAnimation } from 'liquid-route';
 import toast from './toast';
 import '../style/index.css';
 import '../style/toastr.css';
 
 export default class App extends Component {
-	deferredPrompt;
 	state = {
 		showInstall: false
 	};
@@ -26,23 +24,20 @@ export default class App extends Component {
 	 *	@param {string} e.url	The newly routed URL
 	 */
 	handleRoute = e => {
-		if (!this.header)
-			return;
-
 		//Check if we're on the login page, deactivate header if so
 		if (e.url === '/')
-			this.header.setState({ active: false });
+			this.setState({ headerActive: false });
 		else if (e.url !== '/')
-			this.header.setState({ active: true });
+			this.setState({ headerActive: true });
 	};
 
 	render(props, state) {
 		return (
 			<div id="app">
-				<Header ref={h => this.header = h} />
-				<Router onChange={this.handleRoute} basename >
-					<LiquidRoute path="/" animator={PopAnimation} component={Login}/>
-					<LiquidRoute
+				<Header active={state.headerActive} />
+				<Router onChange={this.handleRoute} >
+					<Route path="/" component={Login} />
+					<Route
 						path="/shopping"
 						animator={FadeAnimation}
 						getComponent={() => import('../routes/shopping').then(m => m.default)}

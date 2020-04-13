@@ -50,7 +50,7 @@ export default class Cooking extends Component {
 
 	openAddMenu = () => {
 		this.clearItemDialog();
-		this.state.addNewItem = true;
+		this.setState({ addNewItem: true });
 		this.addItemDlg.MDComponent.show();
 	};
 
