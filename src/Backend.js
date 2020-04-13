@@ -140,19 +140,19 @@ export default class Backend {
 	}
 	static deleteMenuSchedule(item) {
 		let formData = new FormData();
-		formData.append('week', item.Week);
+		formData.append('id', item.Id);
 
 		return this._osteRequest('/api/cooking', 'DELETE', formData);
 	}
 	static attendMeal(meal) {
 		let formData = new FormData();
-		formData.append('week', meal.Week);
+		formData.append('id', meal.Id);
 
 		return this._osteRequest('/api/cooking/participate', 'PUT', formData, true);
 	}
 	static cancelAttendanceOnMeal(meal) {
 		let formData = new FormData();
-		formData.append('week', meal.Week);
+		formData.append('id', meal.Id);
 
 		return this._osteRequest('/api/cooking/participate', 'DELETE', formData, true);
 	}

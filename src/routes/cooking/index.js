@@ -7,20 +7,8 @@ import linkState from 'linkstate';
 import Fab from 'preact-material-components/Fab';
 import toast from '../../components/toast';
 import CookingCard from './CookingCard';
-import Select from 'preact-material-components/Select';
 
-function weekdayToIndex (weekday) {
-	switch (weekday) {
-		case 'Mandag': return 0;
-		case 'Tirsdag': return 1;
-		case 'Onsdag': return 2;
-		case 'Torsdag': return 3;
-		case 'Fredag': return 4;
-		case 'Lørdag': return 5;
-		case 'Søndag': return 6;
-		default: return 0;
-	}
-}
+const dateSort = (m1, m2) => new Date(m2.Week) - new Date(m1.Week);
 
 export default class Cooking extends Component {
 	state = {
@@ -42,11 +30,11 @@ export default class Cooking extends Component {
 
 	openEditMenu = (menu) => (e) => {
 		this.setState({
+			newId: menu.Id,
 			addNewItem: false,
 			newMeal: menu.Meal,
-			newWeek: menu.Week,
-			newWeekday: menu.Day,
-			selectedIndex: weekdayToIndex(menu.Day)
+			newPrice: menu.Price,
+			newDate: menu.Date
 		});
 		this.addItemDlg.MDComponent.show();
 	};
@@ -59,20 +47,21 @@ export default class Cooking extends Component {
 
 	deleteItem = (menu) => () => {
 		Backend.deleteMenuSchedule(menu).then(() => {
-			toast(`Planen for uge ${menu.Week} blev slettet`);
+			toast(`Planen for uge ${menu.Meal} blev slettet`);
 			this.setState({ upForDeletion: menu });
 		}).catch(e => {
-			toast(`Planen for uge ${menu.Week} kunne ikke slettes`, e, 'error');
+			toast(`Planen for uge ${menu.Meal} kunne ikke slettes`, e, 'error');
 		});
 	};
 
 	clearItemDialog = () => {
 		this.setState({
 			addNewItem: undefined,
+			newId: '',
 			newMeal: '',
 			newChef: '',
-			newWeek: '',
-			newWeekday: ''
+			newDate: new Date(),
+			newPrice: 0
 		});
 	};
 
@@ -80,8 +69,8 @@ export default class Cooking extends Component {
 		//TODO: Prevent dialog from hiding if errors
 		let fd = new FormData();
 		fd.append('meal', this.state.newMeal);
-		fd.append('week', this.state.newWeek);
-		fd.append('weekday', this.state.newWeekday);
+		fd.append('price', this.state.newPrice);
+		fd.append('date', this.state.newDate);
 
 		if (this.state.addNewItem) {
 			Backend.addMenuSchedule(fd)
@@ -93,9 +82,10 @@ export default class Cooking extends Component {
 				});
 		}
 		else {
+			fd.append('id', this.state.newId);
 			Backend.updateMenuSchedule(fd)
 				.then(r => {
-					let newItems = this.state.schedule.filter(i => i.Week !== this.state.newWeek).concat(r).sort((c1, c2) => c1.Week - c2.Week);
+					let newItems = this.state.schedule.filter(i => i.Id !== this.state.newId).concat(r).sort(dateSort);
 					this.setState({ schedule: newItems, editItem: undefined });
 					this.clearItemDialog();
 				}).catch(e => {
@@ -121,7 +111,7 @@ export default class Cooking extends Component {
 	attend = (meal) => e => {
 		Backend.attendMeal(meal).then(r => {
 			// Remove the old instane of the week in the schedule, add the new and sort by week
-			let s = this.state.schedule.filter(c => c.Week !== r.Week).concat(r).sort((c1, c2) => c1.Week - c2.Week);
+			let s = this.state.schedule.filter(c => c.Id !== r.Id).concat(r).sort(dateSort);
 			this.setState({ schedule: s });
 		}).catch(e => {
 			toast(e, undefined, 'error');
@@ -131,7 +121,7 @@ export default class Cooking extends Component {
 	cancelAttendance = (meal) => e => {
 		Backend.cancelAttendanceOnMeal(meal).then(r => {
 			// Remove the old instane of the week in the schedule, add the new and sort by week
-			let s = this.state.schedule.filter(c => c.Week !== r.Week).concat(r).sort((c1, c2) => c1.Week - c2.Week);
+			let s = this.state.schedule.filter(c => c.Id !== r.Id).concat(r).sort(dateSort);
 			this.setState({ schedule: s });
 		}).catch(e => {
 			toast(e, undefined, 'error');
@@ -146,7 +136,7 @@ export default class Cooking extends Component {
 						if (m === state.upForDeletion){
 							let item =  <CookingCard className={style.delete} menu={m} />;
 							setTimeout(() => {
-								this.setState({ schedule: state.schedule.filter(i => i.Week !== m.Week), upForDeletion: undefined });
+								this.setState({ schedule: state.schedule.filter(i => i.Id !== m.Id), upForDeletion: undefined });
 							}, 510);
 							return item;
 						}
@@ -161,28 +151,16 @@ export default class Cooking extends Component {
 					<Dialog.Body className={style.centerChildren}>
 						<TextField className={style.wideInputField} id={this.domIds.dialogMealId}
 							onInput={linkState(this, 'newMeal')} value={state.newMeal} label="Ret"
-							onkeydown={this.focusOnEnter(this.domIds.dialogWeek)} required
+							onkeydown={this.focusOnEnter('menu-price')} required
 						/>
-						<TextField className={style.wideInputField} type="number" id={this.domIds.dialogWeek}
-							onInput={linkState(this, 'newWeek')} value={state.newWeek} label="Uge Nummer"
+						<TextField className={style.wideInputField} type="number" step="1" id="menu-price"
+							onInput={linkState(this, 'newPrice')} value={state.newPrice} label="Forventet pris"
+							onkeydown={this.focusOnEnter('menu-date')} required
+						/>
+						<TextField className={style.wideInputField} type="date" id="menu-date"
+							onInput={linkState(this, 'newDate')} value={state.newDate} label="Dato"
 							onkeydown={this.submitOnEnter} required
 						/>
-						<div className={style.wideInputField}>
-							<Select hintText="Vælg en ugedag"
-								selectedIndex={state.chosenIndex}
-								onChange={e => {
-									this.setState({ chosenIndex: e.target.selectedIndex, newWeekday: e.target.value });
-								}}
-							>
-								<Select.Item value="Monday">Mandag</Select.Item>
-								<Select.Item value="Tuesday">Tirsdag</Select.Item>
-								<Select.Item value="Wednesday">Onsdag</Select.Item>
-								<Select.Item value="Thursday">Torsdag</Select.Item>
-								<Select.Item value="Friday">Fredag</Select.Item>
-								<Select.Item value="Saturday">Lørdag</Select.Item>
-								<Select.Item value="Sunday">Søndag</Select.Item>
-							</Select>
-						</div>
 					</Dialog.Body>
 					<Dialog.Footer>
 						<Dialog.FooterButton cancel >Annuller</Dialog.FooterButton>

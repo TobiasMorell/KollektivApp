@@ -24,6 +24,7 @@ export default class CookingCard extends Component {
 	};
 
 	render({ menu, className, openEditMenu, deleteItem, onAttend, onCancel, session }, state) {
+		let date = new Date(menu.Date);
 		return (
 			<Card className={[className, style.cookingCard].join(' ')}>
 				<div>
@@ -31,12 +32,16 @@ export default class CookingCard extends Component {
 				</div>
 				<div className={style.cardBody}>
 					<div className={style.menuDetails}>
-						<span>Ugedag:</span>
-						<span>{menu.Day}</span>
+						<span>Dato:</span>
+						<span>{date.toLocaleDateString().replace(/\//g, ' / ')}</span>
 					</div>
 					<div className={style.menuDetails}>
 						<span>Ret:</span>
 						<span>{menu.Meal}</span>
+					</div>
+					<div className={style.menuDetails}>
+						<span>Forventet pris:</span>
+						<span>{menu.Price} kr.</span>
 					</div>
 					<div className={style.menuDetails}>
 						<span>Tilberedt af:</span>
