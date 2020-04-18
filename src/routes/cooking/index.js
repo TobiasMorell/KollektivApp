@@ -1,10 +1,8 @@
-import { h, Component } from 'preact';
+import { Component } from 'preact';
 import style from './style.css';
 import Backend from '../../Backend';
-import Dialog from 'preact-material-components/Dialog';
-import TextField from 'preact-material-components/TextField';
+import { Dialog, TextField, Fab } from 'preact-material-components';
 import linkState from 'linkstate';
-import Fab from 'preact-material-components/Fab';
 import toast from '../../components/toast';
 import CookingCard from './CookingCard';
 
@@ -12,7 +10,8 @@ const dateSort = (m1, m2) => new Date(m2.Week) - new Date(m1.Week);
 
 export default class Cooking extends Component {
 	state = {
-		schedule: []
+		schedule: [],
+		editMenu: {}
 	};
 	domIds = {
 		dialogTitleId: 'menu-dialog-name',
@@ -30,11 +29,7 @@ export default class Cooking extends Component {
 
 	openEditMenu = (menu) => (e) => {
 		this.setState({
-			newId: menu.Id,
-			addNewItem: false,
-			newMeal: menu.Meal,
-			newPrice: menu.Price,
-			newDate: menu.Date
+			editMenu: Object.assign({}, menu)
 		});
 		this.addItemDlg.MDComponent.show();
 	};
@@ -57,20 +52,22 @@ export default class Cooking extends Component {
 	clearItemDialog = () => {
 		this.setState({
 			addNewItem: undefined,
-			newId: '',
-			newMeal: '',
-			newChef: '',
-			newDate: new Date(),
-			newPrice: 0
+			editMenu: {
+				Id: '',
+				Meal: '',
+				Chef: '',
+				Date: new Date(),
+				Price: 0
+			}
 		});
 	};
 
 	confirmMenuDialog = (e) => {
 		//TODO: Prevent dialog from hiding if errors
 		let fd = new FormData();
-		fd.append('meal', this.state.newMeal);
-		fd.append('price', this.state.newPrice);
-		fd.append('date', this.state.newDate);
+		fd.append('meal', this.state.editMenu.Meal);
+		fd.append('price', this.state.editMenu.Price);
+		fd.append('date', this.state.editMenu.Date);
 
 		if (this.state.addNewItem) {
 			Backend.addMenuSchedule(fd)
@@ -79,13 +76,14 @@ export default class Cooking extends Component {
 					this.setState({ schedule: this.state.schedule.concat(r), editItem: undefined });
 				}).catch(e => {
 					toast('Kunne ikke tilføje madplan', e, 'error');
+
 				});
 		}
 		else {
-			fd.append('id', this.state.newId);
+			fd.append('id', this.state.editMenu.Id);
 			Backend.updateMenuSchedule(fd)
 				.then(r => {
-					let newItems = this.state.schedule.filter(i => i.Id !== this.state.newId).concat(r).sort(dateSort);
+					let newItems = this.state.schedule.filter(i => i.Id !== this.state.editMenu.Id).concat(r).sort(dateSort);
 					this.setState({ schedule: newItems, editItem: undefined });
 					this.clearItemDialog();
 				}).catch(e => {
@@ -150,15 +148,15 @@ export default class Cooking extends Component {
 					<Dialog.Header>{state.addNewItem ? 'Tilføj en madplan' : 'Rediger en madplan'}</Dialog.Header>
 					<Dialog.Body className={style.centerChildren}>
 						<TextField className={style.wideInputField} id={this.domIds.dialogMealId}
-							onInput={linkState(this, 'newMeal')} value={state.newMeal} label="Ret"
+							onInput={linkState(this, 'editMenu.Meal')} value={state.editMenu.Meal} label="Ret"
 							onkeydown={this.focusOnEnter('menu-price')} required
 						/>
 						<TextField className={style.wideInputField} type="number" step="1" id="menu-price"
-							onInput={linkState(this, 'newPrice')} value={state.newPrice} label="Forventet pris"
+							onInput={linkState(this, 'editMenu.Price')} value={state.editMenu.Price} label="Forventet pris"
 							onkeydown={this.focusOnEnter('menu-date')} required
 						/>
 						<TextField className={style.wideInputField} type="date" id="menu-date"
-							onInput={linkState(this, 'newDate')} value={state.newDate} label="Dato"
+							onInput={linkState(this, 'editMenu.Date')} value={state.editMenu.Date} label="Dato"
 							onkeydown={this.submitOnEnter} required
 						/>
 					</Dialog.Body>

@@ -1,12 +1,10 @@
 import { h, Component } from 'preact';
 import { route } from 'preact-router';
-import Card from 'preact-material-components/Card';
+import { Card, TextField, Button } from 'preact-material-components';
 import 'preact-material-components/Card/style.css';
 import 'preact-material-components/Button/style.css';
-import TextField from 'preact-material-components/TextField';
 import 'preact-material-components/TextField/style.css';
 import style from './style.css';
-import Button from 'preact-material-components/Button';
 import Backend from '../../Backend';
 import toast from '../../components/toast';
 import Logo from '../../assets/logo.jpg';

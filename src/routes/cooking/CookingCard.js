@@ -1,7 +1,6 @@
 import { Component } from 'preact';
 import Card from 'preact-material-components/Card';
 import style from './style.css';
-import Backend from '../../Backend';
 
 export default class CookingCard extends Component {
 	actionButtons = (session) => {
@@ -28,16 +27,12 @@ export default class CookingCard extends Component {
 		return (
 			<Card className={[className, style.cookingCard].join(' ')}>
 				<div>
-					<h2 className=" mdc-typography--title">Uge {menu.Week}</h2>
+					<h2 className=" mdc-typography--title">{menu.Meal}</h2>
 				</div>
 				<div className={style.cardBody}>
 					<div className={style.menuDetails}>
 						<span>Dato:</span>
 						<span>{date.toLocaleDateString().replace(/\//g, ' / ')}</span>
-					</div>
-					<div className={style.menuDetails}>
-						<span>Ret:</span>
-						<span>{menu.Meal}</span>
 					</div>
 					<div className={style.menuDetails}>
 						<span>Forventet pris:</span>

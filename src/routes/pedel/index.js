@@ -18,7 +18,7 @@ const lexSort = (a, b) => {
 	return 0;
 };
 
-export default class Cooking extends Component {
+export default class PedelListe extends Component {
 	state = {
 		fixitItems: [],
 		editImage: false

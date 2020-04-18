@@ -1,8 +1,7 @@
 import { Component } from 'preact';
 import style from './style.css';
-import Icon from 'preact-material-components/Icon';
+import { Icon, Button } from 'preact-material-components';
 import Markdown from 'preact-markdown';
-import Button from 'preact-material-components/Button';
 
 export default class KollexiconRule extends Component {
 	toggleExpansion = e => {

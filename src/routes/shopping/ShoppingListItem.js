@@ -1,7 +1,6 @@
 import { h, Component } from 'preact';
-import List from 'preact-material-components/List';
+import { List, Icon } from 'preact-material-components';
 import style from './style.css';
-import Icon from 'preact-material-components/Icon';
 import 'preact-material-components/Icon/style.css';
 import Backend from '../../Backend';
 import toast from '../../components/toast';

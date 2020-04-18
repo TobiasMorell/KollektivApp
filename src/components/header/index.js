@@ -1,8 +1,6 @@
 import { h, Component } from 'preact';
 import { route } from 'preact-router';
-import Toolbar from 'preact-material-components/Toolbar';
-import Drawer from 'preact-material-components/Drawer';
-import List from 'preact-material-components/List';
+import { Toolbar, List, Drawer } from 'preact-material-components';
 import Backend from '../../Backend';
 import 'preact-material-components/style.css';
 import style from './style.css';

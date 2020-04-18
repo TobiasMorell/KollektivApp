@@ -1,5 +1,5 @@
-import { h, Component } from 'preact';
-import { Route, route, Router } from 'preact-router';
+import { Component } from 'preact';
+import { Route, Router } from 'preact-router';
 import Header from './header';
 import Shopping from '../routes/shopping';
 import Login from '../routes/login';
@@ -37,7 +37,7 @@ export default class App extends Component {
 			<div id="app">
 				<Header active={state.headerActive} />
 				<Router onChange={this.handleRoute} >
-					<Route path="/" component={Login} />
+					<Route path="/" component={Login} animator={PopAnimation} />
 					<Route
 						path="/shopping"
 						animator={FadeAnimation}

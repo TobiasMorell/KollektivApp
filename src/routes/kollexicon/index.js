@@ -1,15 +1,12 @@
 import { h, Component } from 'preact';
-import TextField from 'preact-material-components/TextField';
+import { TextField, Card, Dialog, Fab } from 'preact-material-components';
 import 'preact-material-components/TextField/style.css';
 import style from './style.css';
 import linkState from 'linkstate';
-import Card from 'preact-material-components/Card';
 import 'preact-material-components/Card/style.css';
 import KollexiconRule from './KollexiconRule';
 import toast from '../../components/toast';
-import Dialog from 'preact-material-components/Dialog';
 import Backend from '../../Backend';
-import Fab from 'preact-material-components/Fab';
 
 export default class Shopping extends Component {
 	state = {

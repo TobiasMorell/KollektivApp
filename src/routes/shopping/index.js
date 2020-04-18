@@ -1,12 +1,8 @@
-import { h, Component } from 'preact';
-import TextField from 'preact-material-components/TextField';
-import Fab from 'preact-material-components/Fab';
-import List from 'preact-material-components/List';
+import { Component } from 'preact';
+import { TextField, Fab, List, Dialog, Icon } from 'preact-material-components';
 import style from './style.css';
 import ShoppingListItem from './ShoppingListItem';
 import Backend from '../../Backend';
-import Dialog from 'preact-material-components/Dialog';
-import Icon from 'preact-material-components/Icon';
 import AutoCompleter from 'preact-material-autocompleter';
 import linkState from 'linkstate';
 import toast from '../../components/toast';

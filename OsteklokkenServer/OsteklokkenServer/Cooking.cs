@@ -10,48 +10,84 @@ namespace OsteklokkenServer
         public string Chef { get; set; }
         public string Meal { get; set; }
         [BsonId]
-        public int Week { get; set; }
+        public string Id { get; set; }
+        public string Date { get; set; }
 
-        public DayOfWeek Day { get; set; }
-        
+        public uint Price { get; set; }
+
         public List<string> Participants { get; set; }
 
-        public static bool TryParseForm(IFormCollection form, out Cooking cooking, out string error, bool doFullValidation = false)
+        public static bool TryParseForm(IFormCollection form, out Cooking cooking, out string error, bool generateId = false)
         {
             cooking = null;
             error = "";
-            if (!form.ContainsKey("week"))
+            string id;
+            if (generateId)
             {
-                error = "'week' is missing";
-                return false;
+                id = Guid.NewGuid().ToString("N");
             }
-            if (!int.TryParse(form["week"], out var week))
+            else
             {
-                error = "'week' must be an int";
-                return false;
+                if (!form.ContainsKey("id"))
+                {
+                    error = "'id' is missing";
+                    return false;
+                }
+
+                id = form["id"];
             }
+
             cooking = new Cooking()
             {
-                Week = week,
+                Id = id,
             };
-            if (!doFullValidation) return true;
             
+            if (!form.ContainsKey("date"))
+            {
+                error = "'date' is missing";
+                return false;
+            }
+
+            cooking.Date = form["date"];
+
             if (!form.ContainsKey("meal"))
             {
                 error = "'meal' is missing.";
                 return false;
             }
-            if (!Enum.TryParse<DayOfWeek>(form["weekday"], out var day))
+
+            if (!form.ContainsKey("price"))
             {
-                error = "The value of 'weekday' was not valid: " + form["weekday"];
+                error = "'price' is missing";
+                return false;
+            }
+
+            if (!uint.TryParse(form["price"], out var price))
+            {
+                error = "'price' is not an uint";
                 return false;
             }
 ;
             cooking.Meal = form["meal"];
-            cooking.Day = day;
             cooking.Participants = new List<string>();
+            cooking.Price = price;
 
             return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Cooking c && c.Id == Id;
+        }
+
+        protected bool Equals(Cooking other)
+        {
+            return Id == other.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return Id != null ? Id.GetHashCode() : 0;
         }
     }
 }
