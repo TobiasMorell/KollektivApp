@@ -1,0 +1,48 @@
+﻿version: '3.2'
+
+networks:
+  - backend
+
+services:
+  letsencrypt:
+    image: linuxserver/letsencrypt
+    container_name: letsencrypt
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Copenhagen
+      - URL=aa.aivero.dev # if this changes, remember to change config/deep-server-cfg.json
+      - SUBDOMAINS=video,messaging,webrtc
+      - VALIDATION=http
+      - DNSPLUGIN= #optional
+      - DUCKDNSTOKEN= #optional
+      - EMAIL=devel@aivero.com #optional
+      - DHLEVEL=2048 #optional
+      - ONLY_SUBDOMAINS=false #optional
+      - EXTRA_DOMAINS= #optional
+      - STAGING=false #optional
+    volumes:
+      - ./data:/config
+    networks:
+      - rabbit
+      - webrtc
+    ports:
+      - 443:443
+      - 80:80 #optional
+      - 8554:8554 # DeepServer main port
+      - 8554:8554/udp
+      - 10000-10100 # DeepServer streaming ports
+      - 10000-10100/udp
+      - 5670:5670 # RabbitMQ port
+    restart: unless-stopped
+
+
+  kollektiv-backend:
+    build: KollektivApp/OsteklokkenServer
+    ports:
+      - "5000:5000"
+    volumes:
+    - ./users:/app/users
+    - ./db:/app/db
