@@ -1,3 +1,5 @@
+nginx/letsencrypt-conf/*
+
 *AllowedUsers.txt
 osteklokken.zip
 

@@ -1,7 +1,7 @@
 ﻿version: '3.2'
 
 networks:
-  - backend
+  ostenet:
 
 services:
   letsencrypt:
@@ -13,36 +13,34 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Copenhagen
-      - URL=aa.aivero.dev # if this changes, remember to change config/deep-server-cfg.json
-      - SUBDOMAINS=video,messaging,webrtc
+      - URL=localhost.nip.io #osteklokken.morell.site
+      - SUBDOMAINS=api
       - VALIDATION=http
-      - DNSPLUGIN= #optional
-      - DUCKDNSTOKEN= #optional
-      - EMAIL=devel@aivero.com #optional
-      - DHLEVEL=2048 #optional
-      - ONLY_SUBDOMAINS=false #optional
-      - EXTRA_DOMAINS= #optional
-      - STAGING=false #optional
+      - EMAIL=tobiasmorell@hotmail.com #optional
     volumes:
-      - ./data:/config
+      - ./nginx/letsencrypt-conf:/config
     networks:
-      - rabbit
-      - webrtc
+      - ostenet
     ports:
       - 443:443
-      - 80:80 #optional
-      - 8554:8554 # DeepServer main port
-      - 8554:8554/udp
-      - 10000-10100 # DeepServer streaming ports
-      - 10000-10100/udp
-      - 5670:5670 # RabbitMQ port
+      - 80:80
     restart: unless-stopped
 
 
   kollektiv-backend:
-    build: KollektivApp/OsteklokkenServer
-    ports:
-      - "5000:5000"
+    build: OsteklokkenServer
     volumes:
     - ./users:/app/users
     - ./db:/app/db
+    - ./public:/app/public
+    networks:
+      - ostenet
+    ports:
+      - 1001:5000
+
+  preact-frontend:
+    build: .
+    networks:
+      - ostenet
+    ports:
+      - 1000:80

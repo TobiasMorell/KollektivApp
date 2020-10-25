@@ -24,18 +24,63 @@ namespace OsteklokkenServer
 {
     class Program
     {
-        static async Task Main(string[] args)
-        {
-            int port;
+        static int GetPort(string[] args, int deflt = 5000) {
             try
             {
                 var index = args.ToList().IndexOf("--port");
-                port = int.Parse(args[index + 1]);
+                return int.Parse(args[index + 1]);
             }
             catch
             {
-                port = 5000;
+                return deflt;
             }
+        }
+
+        static string GetHost(string[] args, string deflt = "localhost")
+        {
+            try
+            {
+                var index = args.ToList().IndexOf("--host");
+                return args[index + 1];
+            }
+            catch
+            {
+                return deflt;
+            }
+        }
+
+        static void ConfigureCookieSessions(RedHttpServer server, LiteDatabase db)
+        {
+            server.Use(new CookieSessions<OsteSession>(TimeSpan.FromDays(365 * 3))
+            {
+                Secure = false,
+                Store = new LiteDBSessionStore<OsteSession>(db)
+            });
+        }
+
+        static void ConfigureServerProxy(RedHttpServer server)
+        {
+            server.ConfigureApplication = a =>
+            {
+                a.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
+            };
+        }
+
+        static void RegisterRoutes(RedHttpServer server, LiteDatabase db)
+        {
+            UserRoutes.Register(server.CreateRouter("/api"), db);
+            FixitRoutes.Register(server.CreateRouter("/api/fixit"), db);
+            KollexiconRoutes.Register(server.CreateRouter("/api/kollexicon"), db);
+            ShoppingRoutes.Register(server.CreateRouter("/api/shopping"), db);
+            CookingRoutes.Register(server.CreateRouter("/api/cooking"), db);
+        }
+        
+        static async Task Main(string[] args)
+        {
+            var port = GetPort(args);
             
             var server = new RedHttpServer(port, "public");
             var db = new LiteDatabase("osteklokken.litedb");
@@ -50,37 +95,14 @@ namespace OsteklokkenServer
                 return;
             }
 
-
-            server.Use(new CookieSessions<OsteSession>(TimeSpan.FromDays(365 * 3))
-            {
-                Secure = false,
-                Store = new LiteDBSessionStore<OsteSession>(db)
-            });
-
-            server.ConfigureApplication = a =>
-            {
-                a.UseForwardedHeaders(new ForwardedHeadersOptions()
-                {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-                });
-            };
-            /*server.ConfigureServices = s =>
-            {
-                s.Configure<ForwardedHeadersOptions>(o =>
-                {
-                    o.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
-                });
-            };*/
+            ConfigureCookieSessions(server, db);
+            ConfigureServerProxy(server);
 
             server.Get("/api/ping", (req, res) => res.SendString("pong"));
-            
-            UserRoutes.Register(server.CreateRouter("/api"), db);
-            FixitRoutes.Register(server.CreateRouter("/api/fixit"), db);
-            KollexiconRoutes.Register(server.CreateRouter("/api/kollexicon"), db);
-            ShoppingRoutes.Register(server.CreateRouter("/api/shopping"), db);
-            CookingRoutes.Register(server.CreateRouter("/api/cooking"), db);
 
-            await server.RunAsync();
+            RegisterRoutes(server, db);
+            
+            await server.RunAsync(GetHost(args));
         }
     }
 }

@@ -15,4 +15,4 @@ ENV PROJECT_NAME=OsteklokkenServer
 WORKDIR /app
 COPY --from=build /app/${PROJECT_NAME}/out ./
 EXPOSE 5000
-ENTRYPOINT ["dotnet", "OsteklokkenServer.dll"]
+ENTRYPOINT ["dotnet", "OsteklokkenServer.dll", "--host", "0.0.0.0"]
