@@ -3,6 +3,14 @@ import { route } from 'preact-router';
 export default class Backend {
 	static session = undefined;
 
+	static _getUrl = path => {
+		if (window.location.includes('osteklokken')) {
+			return `${window.location.protocol}//${window.location.hostname.replace('osteklokken', 'api')}${path}`;
+		}
+
+		return path;
+	}
+
 	static getSessionDetails () {
 		if (this.session) return this.session;
 		let s = typeof window !== 'undefined' ? localStorage.getItem('session') : undefined;
@@ -21,15 +29,15 @@ export default class Backend {
 
 	/**
 	 * Sends a request to the backend.
-     * @param url {string} - The url to send the url to.
+     * @param path {string} - The path to send the request to.
      * @param httpMethod {string} - The method to send to
      * @param form {FormData} - The body to send with the request.
      * @param isJson {boolean} - A flag to indicate that we expect a JSON result
      * @returns {Promise<Response | never>}
      * @private
      */
-	static _osteRequest = async (url, httpMethod, form = null, isJson = false) => {
-		let res = await fetch(url,
+	static _osteRequest = async (path, httpMethod, form = null, isJson = false) => {
+		let res = await fetch(Backend._getUrl(path),
 			{
 				method: httpMethod,
 				mode: 'cors',

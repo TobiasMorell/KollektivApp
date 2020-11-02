@@ -13,10 +13,10 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Copenhagen
-      - URL=localhost.nip.io #osteklokken.morell.site
-      - SUBDOMAINS=api
+      - URL=morell.site
+      - SUBDOMAINS=api,osteklokken
       - VALIDATION=http
-      - EMAIL=tobiasmorell@hotmail.com #optional
+      - EMAIL=tobiasmorell@hotmail.com
     volumes:
       - ./nginx/letsencrypt-conf:/config
     networks:
